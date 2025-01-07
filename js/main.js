@@ -1,9 +1,6 @@
-// alert("Yo!!!");
-// Параметры (настройка)
 BAR_LIMIT = 1000;
-
-// service constant-array - names of the keys denoting the points of the model
-// служебный константа-массив - наименование ключей, обозначающих точки модели
+ConsoleLoggingOn = false;
+// * Service constant-array - names of the keys denoting the points of the model / Cлужебный константа-массив - наименование ключей, обозначающих точки модели
 PointsList = [
   "2",
   "3",
@@ -57,16 +54,13 @@ Model_colors = {
 };
 
 Graph_settings = {
-  // width: 1200, // ширина холста
-  width: document.getElementById("canvas-wrapper").clientWidth + 50, // ширина холста
-  // width: document.getElementById("canvas-wrapper").offsetWidth, // ширина холста
-  //  width: canvasWrapper.offsetWidth - (parseInt(window.getComputedStyle(canvasWrapper).marginLeft) + parseInt(window.getComputedStyle(canvasWrapper).marginRight)),
-
-  height: 520, // высота холста
-  left: 10.5, // область графика - отступ по оси Х (слева)
-  top: 5.5, // область графика - отступ по оси Y (сверху)
-  right: 86.5, // область графика - отступ по оси Х (справа)
-  bottom: 22.5, // область графика - отступ по оси Y (снизу)
+  // width: 1200, // Width of the canvas. Ширина холста
+  width: document.getElementById("canvas-wrapper").clientWidth + 50, // Width of the canvas / Ширина холста
+  height: 520, // Height of the canvas. Высотка холста
+  left: 10.5, // Chart area  -  X-axis offset (from the left) / Область графика - отступ по оси Х (слева)
+  top: 5.5, // Chart area -  Y-axis offset (from above)
+  right: 86.5, // Chart area  -  X-axis offset (from the right)
+  bottom: 22.5, // Chart area -  Y-axis offset  (from the bottom)
   rightSideBarWidth: 310, // ширина блока справа от графика +margin 10px слева и справа
   scale: {
     // размер баров для разного масштаба - ширина и расстояние между барами (ширина бара должна быть нечетным значением, что-бы фитиль был по центру
@@ -83,16 +77,17 @@ Graph_settings = {
   },
   max_scale: 9,
   color: {
+    // Colors - up body, down body, candles shadows
     down: "#f00",
     up: "#00f",
     downLine: "#f00",
     upLine: "#00f",
     fieldBorder: "#ddd",
-  }, // цвета - растущий, падающий, хвост свечи для растущего и падающего
+  }, 
 };
 intervalList = ["1m", "5m", "10m", "15m", "30m", "1h", "1D", "1W"];
 intervalSelected = 1; // индекс в intervalList - значение по умолчанию (при F5)
-penDown = false; // нажатие левой кнопки мыши
+penDown = false; // Pressing the left mouse button
 // pairList={  // для BINANCE - test
 //     "BTCUSDT": "BTC_USDT",
 //     "ETHUSDT": "ETH_USDT",
@@ -102,7 +97,7 @@ penDown = false; // нажатие левой кнопки мыши
 // }
 
 pairList = {
-  // для FOREX Финам https://www.finam.ru
+  // для FOREX Finam https://www.finam.ru
   EURUSD: "EUR/USD",
   //  JPYUSD: "JPY/USD",
   CADUSD: "CAD/USD",
@@ -115,7 +110,7 @@ pairList = {
   //    "USDTRY": "USDTRY",
 };
 
-pairSelected = "EURUSD"; // индекс в pairlList - значение по умолчанию (при F5)
+pairSelected = "EURUSD"; // Pairllist index - default value (at F5)
 Data_settings = {
   n_bar: 0, // заполняется при получении данных - количество баров
   bar_n_min: 0, // заполняется при получении данных - количество минут в баре (интервал)
@@ -129,7 +124,7 @@ Data_settings = {
   min_v: 0, //минимальное значение цены на текущем графике
   X_right: 0, // координата X самого правого бара
   barsOnDesk: 0, // сколько помещается баров на экране
-  offset: 0, // *Переменная для горизонтальной проекрутки
+  offset: 0, // Переменная для горизонтальной проекрутки
 };
 Models = []; // массив моделей, получается AJAX (Расчет алгоритма_1)
 Models2 = []; // массив моделей, получается AJAX (Расчет алгоритма_2)
@@ -137,9 +132,6 @@ whatIsCalculatingNow = 0; // 0=расчет в настоящий момент �
 algorithmCalculated = 0; // устанавливается при получении ответа по AJAX - номер алгоритма, который вернул результат
 //переключатель - "показывть окно debug?"
 debugMode = false;
-// Graph_settings.width=document.body.clientWidth-Graph_settings.rightSideBarWidth-40;
-// $("#canvas-wrapper").html("<canvas id='graph' width='"+Graph_settings.width+"' height='"+Graph_settings.height+"'></canvas><div id='line-g'></div><div id='line-v'>"+
-//    "</div><div id=\"last-price\">last price</div><div id=\"point-price\">point price</div><div id=\"graph-cover\"></div>");
 createCanvas();
 isLoaderOn = false; // нужно ли показывать лоадер в настоящий момент (ждем ответа от AJAX и блокируем экран)
 loaderSec = 0; //время, прошедшее с начала загрузки - точность до 0.1 сек.
@@ -185,7 +177,7 @@ function setAlg_num(num) {
   }
 }
 function createCanvas() {
-  // Создаёт холст
+  // * Creates a canvas
   // Graph_settings.width =
   //   document.body.clientWidth - Graph_settings.rightSideBarWidth - 55;
   // if (Graph_settings.width < 640) Graph_settings.width = 640;
@@ -218,8 +210,8 @@ function showLoaderInfo() {
   }
 }
 $(document).ready(function () {
-  let selected = $("#source-switch input[type='radio']:checked"); // j переключить источник данных
-  //console.log(selected[0].id);
+  let selected = $("#source-switch input[type='radio']:checked"); // Switch the data source
+  if (ConsoleLoggingOn) console.log(selected[0].id);
 
   if (selected[0].id == "rb-forex") changeSource("forex");
   if (selected[0].id == "rb-saves") changeSource("saves");
@@ -265,9 +257,9 @@ $(document).ready(function () {
     top: Graph_settings.top - 4,
     left: Graph_settings.left + 1,
   });
-  graph_position = $("#graph").offset(); // J .offset Метод позволяет получить текущее положение элемента относительно документа, graph - это id холста в файле index.php
+  graph_position = $("#graph").offset(); // graph - is a canvas ID in the index.php file
 
-  if (Data_settings.n_bar > 0) drawGraph(); // UPD: вроде, такого не может быть, при старте всегда 0 -  не понятно, что за оператор :)
+  if (Data_settings.n_bar > 0) drawGraph(); 
 
   penDown = false;
   wasMoved = false; // * Добавлено
@@ -289,8 +281,7 @@ $(document).ready(function () {
       var xpos = event.pageX - graph_position.left;
       var ypos = event.pageY - graph_position.top;
       if (penDown == false) {
-        // двигаем направляющие оси по графику
-
+        // Moving the guiding liens on the chart
         if (
           ypos >= Graph_settings.top &&
           ypos <= Graph_settings.height - Graph_settings.bottom &&
@@ -323,10 +314,10 @@ $(document).ready(function () {
           );
           // Определяет индекс текущего выбранного бара.
           Data_settings.pointedBar = Data_settings["cur_bar"] - nbar;
-          // Data_settings.pointedBar = Data_settings["cur_bar"];
-          console.log("PointedBar:" + Data_settings.pointedBar);
-          console.log("cur_bar" + Data_settings["cur_bar"]);
-          console.log("nbar" + nbar);
+          // if (ConsoleLoggingOn) console.log("PointedBar:" + Data_settings.pointedBar);
+          // if (ConsoleLoggingOn) console.log("cur_bar" + Data_settings["cur_bar"]);
+          // if (ConsoleLoggingOn)console.log("nbar" + nbar);
+
           // Убеждается, что номер бара не превышает допустимое значение.
           if (nbar > Data_settings.cur_bar) nbar = Data_settings.cur_bar;
           // Устанавливает позицию вертикальной линии на графике.
@@ -423,7 +414,7 @@ $(document).ready(function () {
       let old_activBar = Data_settings.activeBar;
       Data_settings.activeBar = Data_settings.pointedBar;
 
-      console.log(
+      if (ConsoleLoggingOn) console.log(
         `Clicked bar: old_activBar=${old_activBar}, new activeBar=${Data_settings.activeBar}`
       );
 
@@ -466,7 +457,6 @@ $(document).ready(function () {
     //alert("down");
     penDown = true;
     wasMoved = false;
-    // xDown = event.pageX - graph_position.left; // запоминаем, где нажали кнопку на графике
     xDown = event.pageX; // запоминаем, где нажали кнопку на графике
     yDown = event.pageY - graph_position.top;
     cur_barDown = Data_settings.cur_bar;
@@ -503,21 +493,12 @@ $(document).ready(function () {
       const maxX = scrollBarWidth;
       const clampedXpos = Math.max(minX, Math.min(xpos, maxX));
 
-      // const dx = Math.round(
-      //   // (xpos - xDownScrollBar) / Graph_settings.scale[Data_settings.scale].step
-      //   (clampedXpos - xDownScrollBar) /
-      //     Graph_settings.scale[Data_settings.scale].step
-      // );
-      // updateCurBarFromScrollBar(dx);
-
       // Рассчитываем пропорциональное изменение cur_bar
       const scrollValue = (clampedXpos / scrollBarWidth) * 100; // Процентное изменение скролл-бара
       const maxScroll = Data_settings.n_bar - Data.barsOnDesk; // Максимальное количество баров для прокрутки
       const newCurBar =
         Math.round((scrollValue / 100) * maxScroll) + (Data.barsOnDesk - 1);
 
-      // // Обновляем cur_bar с помощью внутренней функции
-      // updateCurBarFromScrollBar(newCurBar - Data_settings.cur_bar);
       // Обновляем cur_bar
       Data_settings.cur_bar = Math.max(0, Math.min(newCurBar, Data_settings.n_bar - 1));
 
@@ -532,17 +513,6 @@ $(document).ready(function () {
       isScrollBarDragging = false;
     }
   });
-
-  // function handleScrollBarChange(event) {
-  //   if (Data_settings.n_bar <= Data.barsOnDesk) return;
-
-  //   const scrollValue = parseFloat(event.target.value);
-  //   const maxScroll = Data_settings.n_bar - Data.barsOnDesk;
-  //   Data_settings.cur_bar =
-  //     Math.round((scrollValue / 100) * maxScroll) + (Data.barsOnDesk - 1);
-
-  //   drawGraph();
-  // }
 
   function handleScrollBarChange(event) {
     const scrollBar = document.getElementById("scroll-bar");
@@ -561,7 +531,7 @@ $(document).ready(function () {
     // Ограничиваем cur_bar в допустимых пределах
     Data_settings.cur_bar = Math.max(0, Math.min(newCurBar, Data_settings.n_bar - 1));
   
-    console.log(`handleScrollBarChange: scrollValue=${scrollValue}, newCurBar=${newCurBar}, cur_bar=${Data_settings.cur_bar}`);
+    if (ConsoleLoggingOn) console.log(`handleScrollBarChange: scrollValue=${scrollValue}, newCurBar=${newCurBar}, cur_bar=${Data_settings.cur_bar}`);
   
     // Перерисовываем график
     drawGraph();
@@ -581,28 +551,9 @@ $(document).ready(function () {
       Math.min(newCurBar, Data_settings.n_bar - 1)
     );
 
-    // if (newCurBar < Data.barsOnDesk - 1) newCurBar = Data.barsOnDesk - 1;
-    // if (newCurBar >= Data_settings.n_bar) newCurBar = Data_settings.n_bar - 1;
-
     Data_settings.cur_bar = newCurBar;
   }
 });
-
-// function updateScrollBar() {
-//   if (Data_settings.n_bar <= Data.barsOnDesk) {
-//     // Если все бары видны, scroll-bar на начальной позиции
-//     $("#scroll-bar").val(0);
-//   // } else {
-//     return;
-//   }
-
-//   // Рассчитываем значение скролл-бара в процентах
-//     const maxScroll = Data_settings.n_bar - Data.barsOnDesk;
-//     const scrollValue =
-//       ((Data_settings.cur_bar - (Data.barsOnDesk - 1)) / maxScroll) * 100;
-//       // Устанавливаем значение скролл-бара
-//     $("#scroll-bar").val(scrollValue);
-// } 
 
 function updateScrollBar() {
   const scrollBar = document.getElementById("scroll-bar");
@@ -626,14 +577,12 @@ function updateScrollBar() {
   scrollBar.min = 0;
   scrollBar.max = maxScroll;
 
-  // // Рассчитываем значение scroll-bar в процентах
-  // const scrollValue = ((Data_settings.cur_bar - (Data.barsOnDesk - 1)) / maxScroll) * 100;
  // Рассчитываем значение scroll-bar
  const scrollValue = Data_settings.cur_bar - (Data.barsOnDesk - 1);
 
   // Устанавливаем значение scroll-bar
   scrollBar.value = scrollValue;
-  console.log(`updateScrollBar: cur_bar=${Data_settings.cur_bar}, scrollValue=${scrollValue}, maxScroll=${maxScroll}`);
+  if (ConsoleLoggingOn) console.log(`updateScrollBar: cur_bar=${Data_settings.cur_bar}, scrollValue=${scrollValue}, maxScroll=${maxScroll}`);
 }
 
 function getModelNumString() {
@@ -681,14 +630,12 @@ function modelInfo() {
       ] +
       df +
       ")</span><br>";
-    //t+=Models[Data_settings['activeBar']][Data_settings['activeBarModelsNum']]['name']+" ";
     for (let a in models_[Data_settings["activeBar"]][
       Data_settings["activeBarModelsNum"]
     ]["status"]) {
-      t += "<span class='model-info-status'>" + a + "</span><br>"; // J перечисление всех статусов циклом
+      t += "<span class='model-info-status'>" + a + "</span><br>"; // Перечисление всех статусов циклом
     }
     //        t+=Models[Data_settings['activeBar']][Data_settings['activeBarModelsNum']]['v']+"<br>";
-    //  alert(Data_settings['activeBarModelsNum']);
     for (let a in models_[Data_settings["activeBar"]][
       Data_settings["activeBarModelsNum"]
     ]) {
@@ -724,7 +671,6 @@ function modelInfo() {
 }
 
 function get_fragment(type) {
-  //   alert($('#select-interval').val()+" "+$('#select-pair').val());
   ResAJAX = false;
   $(".next-prev-model-btns").css("display", "none");
 
@@ -742,7 +688,6 @@ function get_fragment(type) {
 
   let post_data = {
     InstrumentName: $("#select-name").val(),
-    // Period: $("#select-period").val(), // J Добавил
     numBars: nBars_,
     lastBarTime: dandt_,
     modelId: modelId_,
@@ -758,15 +703,13 @@ function get_fragment(type) {
   })
     .done(function (data, textStatus, jqXHR) {
       $("#info-timing").text("" + (new Date() - startTime) / 1000 + " сек.");
-      //data.data = 0;
-      //           console.log(data);
-      //            alert("success");
+      if (ConsoleLoggingOn) console.log(data);
       parse_data_from_db(data);
       $("body").css({ cursor: "default" });
       $("#get-data-btn3").css({ cursor: "default" });
       loaderOff();
-      //        console.log('!!! request.statusText :')
-      //       console.log(request);
+      if (ConsoleLoggingOn) console.log('!!! request.statusText :')
+      if (ConsoleLoggingOn) console.log(request);
     })
     .fail(function (jqXHR, textStatus, errorThrown) {
       $("body").css({ cursor: "default" });
@@ -774,8 +717,8 @@ function get_fragment(type) {
       $("#info-timing").text("" + (new Date() - startTime) / 1000 + " сек.");
       loaderOff();
       alert("error - AJAX запрос");
-      console.log("fail -  jqXHR: ");
-      console.log(jqXHR);
+      if (ConsoleLoggingOn) console.log("fail -  jqXHR: ");
+      if (ConsoleLoggingOn) console.log(jqXHR);
     });
 }
 
@@ -785,7 +728,7 @@ function parse_data_from_db(data) {
   if (!(typeof data["Error"] === "undefined")) {
     alert("Ошибка: " + data["Error"]);
     $("#last-price").css({ top: -1000 });
-    console.log(data);
+    if (ConsoleLoggingOn) console.log(data);
     return false;
   }
   Data_settings.activeBar = Data_settings.pointedBar = 0;
@@ -809,7 +752,7 @@ function parse_data_from_db(data) {
   ResAJAX = data;
   if (typeof data["Models"] !== "undefined")
     for (let model_ind in data["Models"]) {
-      // J ? для  каждой модели создаёт переменную, model_ind - это счётчик
+      // для  каждой модели создаёт переменную, model_ind - это счётчик
       ind = Number(model_ind.substr(1, 100)); // берёт первые 100 цифр номера бара каждой модели
       Models[ind] = data["Models"][model_ind]; // создает в Models подмассив [ind] номеров баров каждой модели (max - 100 цифр в номере)
     }
@@ -822,8 +765,8 @@ function parse_data_from_db(data) {
   algorithmCalculated = 2;
   setAlg_num(2);
   Alg2Show = 2;
-  //console.log(Models)
-  //  console.log(Models2)
+  if (ConsoleLoggingOn) console.log(Models)
+  if (ConsoleLoggingOn) console.log(Models2)
 
   if (ResAJAX["info"]["modelId"] !== "undefined") {
     //запрашивали модель по id
@@ -872,7 +815,7 @@ function parse_data_from_db(data) {
 }
 
 function get_candles(type) {
-  console.log("Запущена функциия get_candles:", type);
+  if (ConsoleLoggingOn) console.log("Запущена функциия get_candles:", type);
   //   alert($('#select-interval').val()+" "+$('#select-pair').val());
   ResAJAX = false;
   $(".next-prev-model-btns").css("display", "none");
@@ -892,13 +835,11 @@ function get_candles(type) {
     limit: BAR_LIMIT,
   };
   if (type == "saves") {
-    // nBars_ = Number(nBars_);
     var nBars_ = Number($("#nBars4get_candles").val());
     if (typeof nBars_ !== "number" || nBars_ == 0) nBars_ = BAR_LIMIT;
 
     var dandt_ = $("#lastBar4get_candles").val();
 
-    // alert("" + nBars_+"  "+dandt_);
     post_data = {
       type: "saves",
       filename: $("#select-chart").val(),
@@ -908,7 +849,7 @@ function get_candles(type) {
   }
   console.log("Ajax - запрос отправлен с параметрами:", post_data);
 
-  // console.log(post_data);
+  if (ConsoleLoggingOn) console.log(post_data);
   let startTime = new Date(); // J Creates a new Date object.
   loaderOn();
 
@@ -923,14 +864,14 @@ function get_candles(type) {
     .done(function (data, textStatus, jqXHR) {
       $("#info-timing").text("" + (new Date() - startTime) / 1000 + " сек.");
       data.data = 0;
-      //           console.log(data);
+      if (ConsoleLoggingOn) console.log(data);
       parse_data(data);
       $("body").css({ cursor: "default" });
       $("#get-data-btn").css({ cursor: "default" });
       $("#get-data-btn2").css({ cursor: "default" });
       loaderOff();
-      //        console.log('!!! request.statusText :')
-      //       console.log(request);
+      if (ConsoleLoggingOn)  console.log('!!! request.statusText :')
+      if (ConsoleLoggingOn) console.log(request);
     })
     .fail(function (jqXHR, textStatus, errorThrown) {
       $("body").css({ cursor: "default" });
@@ -944,18 +885,17 @@ function get_candles(type) {
 }
 let lastBarTime = null; // * Глобальная переменная для хранения временной метки последнего бара в функции get_candles
 let firstBarTime = null; // * Объявляем глобальную переменную firstBarTime
-// function get_more_candles(type, _firstBarTime) {
 function get_more_candles(type, _firstBarTime, direction) {
-  console.log("Начало выполнения функции get_more_candles");
-  console.log("Тип запроса:", type);
-  console.log("Временная метка переданная в функцию:", _firstBarTime);
-  console.log("Направление:", direction);
+  if (ConsoleLoggingOn) console.log("Начало выполнения функции get_more_candles");
+  if (ConsoleLoggingOn) console.log("Тип запроса:", type);
+  if (ConsoleLoggingOn) console.log("Временная метка переданная в функцию:", _firstBarTime);
+  if (ConsoleLoggingOn) console.log("Направление:", direction);
 
   // Определяем временную метку в зависимости от направления
   let _lastBarTime;
   if (direction === "prev") {
     _lastBarTime = _firstBarTime;
-    console.log(
+    if (ConsoleLoggingOn) console.log(
       "Присвоение lastBarTime исходного значение _firstBarTime",
       _lastBarTime
     );
@@ -963,17 +903,17 @@ function get_more_candles(type, _firstBarTime, direction) {
     // Смещаем lastBarTime на определенное количество баров вперед
     let nBarsOffset = Number($("#nBars4get_fragment").val()) || 10; // Значение по умолчанию 10, если поле пустое
     _lastBarTime = lastBarTime + nBarsOffset * BAR_DURATION; // Предполагаем, что BAR_DURATION - это длительность одного бара в миллисекундах
-    console.log("Смещение lastBarTime на", nBarsOffset, "баров вперед");
+    if (ConsoleLoggingOn) console.log("Смещение lastBarTime на", nBarsOffset, "баров вперед");
   }
 
   if (_lastBarTime) {
     lastBarTime = _lastBarTime;
   } else {
-    console.error("Временная метка не установлена");
+    if (ConsoleLoggingOn) console.error("Временная метка не установлена");
     return false;
   }
 
-  console.log("Временные метки для запроса:", {
+  if (ConsoleLoggingOn) console.log("Временные метки для запроса:", {
     lastBarTime: lastBarTime,
     currentFirstBarTime: firstBarTime,
   });
@@ -1007,7 +947,7 @@ function get_more_candles(type, _firstBarTime, direction) {
     };
   }
 
-  console.log("Ajax - запрос будет отправлен с параметрами:", post_data);
+  if (ConsoleLoggingOn) console.log("Ajax - запрос будет отправлен с параметрами:", post_data);
 
   let startTime = new Date(); // Creates a new Date object.
   loaderOn();
@@ -1022,19 +962,19 @@ function get_more_candles(type, _firstBarTime, direction) {
   })
     .done(function (data) {
       $("#info-timing").text("" + (new Date() - startTime) / 1000 + " сек.");
-      console.log("Данные получены успешно:", data);
+      if (ConsoleLoggingOn) console.log("Данные получены успешно:", data);
       loaderOff();
 
       // Обрабатываем полученные данные
       if (parse_data(data)) {
-        console.log(
+        if (ConsoleLoggingOn) console.log(
           "Обновленные временные метки после parse_data firstBarTime:",
           {
             firstBarTime,
             lastBarTime,
           }
         );
-        console.log("Загружено баров:", data.result.length);
+        if (ConsoleLoggingOn) console.log("Загружено баров:", data.result.length);
       } else {
         console.error("Ошибка при обработке данных");
       }
@@ -1052,12 +992,11 @@ function get_more_candles(type, _firstBarTime, direction) {
       loaderOff();
       alert("error - AJAX запрос. Ошибка при загрузке данных: " + textStatus);
       console.error("Ошибка запроса:", jqXHR);
-      // $("body").css({ cursor: "default" });
     });
 }
 
 function parse_data(data) {
-  console.log("Начало выполнения функции parse_data"); // Лог для начала функции
+  if (ConsoleLoggingOn) console.log("Начало выполнения функции parse_data"); // Лог для начала функции
   var el, ot, ct;
 
   Data = data.result;
@@ -1069,7 +1008,7 @@ function parse_data(data) {
     totalDuration += bar.close_time - bar.open_time;
   }
   BAR_DURATION = Math.floor(totalDuration / data.result.length);
-  console.log("Рассчитанное BAR_DURATION:", BAR_DURATION);
+  if (ConsoleLoggingOn) console.log("Рассчитанное BAR_DURATION:", BAR_DURATION);
 
   firstBarTime = data.result[0]?.open_time || null;
   lastBarTime = data.result[data.result.length - 1]?.open_time || null;
@@ -1077,16 +1016,16 @@ function parse_data(data) {
   Data_settings.n_bar = Data.length;
   // Data_settings.n_bar = data["result"].length;
   if (Data_settings.n_bar < 5) {
-    console.error("Ошибка: Недостаточное количество баров", data); // Лог для ошибки
-    alert("Ошибка!\n недостаточное количество баров: " + Data_settings.n_bar);
+    console.error("Error: insufficient bars", data); // Лог для ошибки
+    alert("Ошибка!\n insufficient bars: " + Data_settings.n_bar);
     return false;
   }
   Data_settings.cur_bar = Data_settings.n_bar - 1;
 
-  console.log("Первый бар данных:", data.result[0]); // Лог для просмотра первого бара
-  console.log("Последний бар данных:", data.result[data.result.length - 1]); // Лог для просмотра последнего бара
-  console.log("Значение firstBarTime после обновления:", firstBarTime);
-  console.log("Значение lastBarTime после обновления:", lastBarTime);
+  if (ConsoleLoggingOn) console.log("Первый бар данных:", data.result[0]); // Лог для просмотра первого бара
+  if (ConsoleLoggingOn) console.log("Последний бар данных:", data.result[data.result.length - 1]); // Лог для просмотра последнего бара
+  if (ConsoleLoggingOn) console.log("Значение firstBarTime после обновления:", firstBarTime);
+  if (ConsoleLoggingOn) console.log("Значение lastBarTime после обновления:", lastBarTime);
 
     // Обновляем scroll-bar после загрузки данных
     updateScrollBar();
@@ -1094,18 +1033,6 @@ function parse_data(data) {
   drawGraph();
   return true;
 }
-
-// * Обработчик изменения scroll-bar
-// document
-//   .getElementById("scroll-bar")
-//   .addEventListener("input", function (event) {
-//     let newOffset = parseInt(event.target.value);
-//     if (newOffset !== Data_settings.cur_bar) {
-//       // Используем cur_bar вместо offset для согласованности
-//       Data_settings.offset = newOffset;
-//       drawGraph();
-//     }
-//   });
 
 document.getElementById("scroll-bar").addEventListener("input", function (event) {
   const scrollValue = parseFloat(event.target.value); // Значение скролл-бара в процентах
@@ -1121,19 +1048,9 @@ document.getElementById("scroll-bar").addEventListener("input", function (event)
   drawGraph();
 });
 
-// // * Добавляем обработчик события изменения scroll-bar
-// document.getElementById("scroll-bar").addEventListener("input", function () {
-//   Data_settings.cur_bar = parseInt(this.value, 10);
-//   // drawGraph();
-//   if (newBar !== Data_settings.cur_bar) {
-//     Data_settings.cur_bar = newBar;
-//     drawGraph();
-//   }
-// });
-
 function drawGraph() {
   // отрисовка графика баров + сигналы по Graph_settings , Data_settings
-  console.log(`Drawing graph with activeBar=${Data_settings.activeBar}`);
+  if (ConsoleLoggingOn) console.log(`Drawing graph with activeBar=${Data_settings.activeBar}`);
   var i,
     max_v = 0,
     min_v = 10000000000;
@@ -1182,7 +1099,6 @@ function drawGraph() {
     Data_settings.max_v = max_v;
     Data_settings.min_v = min_v;
   } else {
-    //    alert("Min: "+min__+"  max: "+max__);
     min_v = min__;
     max_v = max__;
     Data_settings.max_v = max_v;
@@ -1196,20 +1112,12 @@ function drawGraph() {
   // Graph_settings.width - Graph_settings.right;
   Data_settings.X_right = X_right;
 
-  console.log(`
+  if (ConsoleLoggingOn) console.log(`
     Calculated X_right=${X_right},
     Graph width=${Graph_settings.width},
     Graph right margin=${Graph_settings.right},
     Bar width=${Graph_settings.scale[Data_settings.scale].width}
   `);
-
-  // var ind = 0;
-
-  // for (
-  //   i = Data_settings.cur_bar;
-  //   i > Data_settings.cur_bar - n_bars && i >= 0;
-  //   i--
-  // ) {
 
   for (
     i = startBarIndex,
@@ -1328,7 +1236,6 @@ function drawGraph() {
   document.getElementById("scroll-bar").max = Math.max(Data.length - n_bars, 0);
 
   // Обновление положения scroll-bar после отрисовки графика
-  // document.getElementById("scroll-bar").value = Data_settings.cur_bar;
   updateScrollBar();
 
   drawModels(graph_context, X_right, step, min_v, max_v, fieldHeight, n_bars);
@@ -1369,7 +1276,6 @@ function wheel(event) {
     graph_position = $("#graph").offset();
     var xpos = event.pageX - graph_position.left;
     var ypos = event.pageY - graph_position.top;
-    //alert("xpos: "+xpos+" ypos: "+ypos);
     if (
       ypos >= Graph_settings.top &&
       ypos <= Graph_settings.height - Graph_settings.bottom &&
@@ -1434,9 +1340,8 @@ function build_models(algorithm_num) {
   if (Data_settings["n_bar"] > MIN_BAR_CNT) {
     // вызов процедуры расчета моделей
     let startTime = new Date();
-    //console.log((new Date()) + " нажали " + algorithm_num+ " wic= "+whatIsCalculatingNow);
+    if (ConsoleLoggingOn) console.log((new Date()) + " нажали " + algorithm_num+ " wic= "+whatIsCalculatingNow);
     whatIsCalculatingNow = algorithm_num;
-    //  let showAllModels=$('#all-models-checkbox').prop('checked');
     let log_ = 0;
     if ($("#chk-log").is(":checked")) log_ = 1;
     let paramArr_ = {
@@ -1444,9 +1349,8 @@ function build_models(algorithm_num) {
       selectedBar: Data_settings["activeBar"],
       log: log_,
     };
-    //alert(showAllModels);
 
-    //    console.log(location);
+    if (ConsoleLoggingOn)  console.log(location);
     $("body").css({ cursor: "wait" });
     $("#build-btn").css({ cursor: "wait" });
     loaderOn(); //блокировка экрана, показ вращающегося лоадера
@@ -1463,7 +1367,7 @@ function build_models(algorithm_num) {
         Chart: JSON.stringify(Data),
         paramArr: paramArr_,
         Models1: Models_Alg1,
-      }, //{ pair: $('#select-pair').val()  , interval : $('#select-interval').val(), limit: BAR_LIMIT },
+      }, 
       dataType: "json",
     })
       .done(function (data, textStatus, jqXHR) {
@@ -1486,13 +1390,8 @@ function build_models(algorithm_num) {
           }
 
         setAlg_num(ResAJAX["Algorithm_num"]);
-        // if (Models.length > 0)
-        //   $(".next-prev-model-btns").css({ display: "inline-block" });
-        // else $(".next-prev-model-btns").css({ display: "none" });
-        //  console.log(Models);
-
         if (typeof ResAJAX["States"] == "undefined") {
-          console.log(ResAJAX);
+          if (ConsoleLoggingOn) console.log(ResAJAX);
           alert("Ошибка AJAX - пустой результат");
           return false;
         }
@@ -1520,7 +1419,7 @@ function build_models(algorithm_num) {
         whatIsCalculatingNow = 0;
         algorithmCalculated = ResAJAX["Algorithm_num"];
         loaderOff();
-        //console.log(data);
+        if (ConsoleLoggingOn) console.log(data);
 
         $("#debug").html("<pre>" + JSON2html(ResAJAX) + "</pre>");
         $("#info-log").html("(" + JSON2htmlStrCnt + " стр.)");
@@ -1529,7 +1428,7 @@ function build_models(algorithm_num) {
         $("body").css({ cursor: "default" });
         $("#build-btn").css({ cursor: "default" });
         $("#info-timing").text("" + (new Date() - startTime) / 1000 + " сек.");
-        alert("error - AJAX запрос");
+        alert("error - AJAX request");
         console.log("fail -  jqXHR: ");
         console.log(jqXHR);
         whatIsCalculatingNow = 0;
@@ -1680,7 +1579,7 @@ document.addEventListener("DOMContentLoaded", function () {
           drawGraph();
         }
       } else {
-        console.log("Курсор вне области графика или нет данных"); // Отладочный лог
+        if (ConsoleLoggingOn) console.log("Cursor outside the chart or no data"); // Отладочный лог
       }
     }
   }

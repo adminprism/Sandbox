@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html>
 
-
- 
-
-
-    
     <div class="window">
         <head>
             <meta charset='UTF-8'>
@@ -167,13 +162,6 @@
                 </form>
             </div>
 
-
-            <!--  Перенесено в <div id="source-saves"> -->
-            <!-- <div id="showPages">
-                <button id="prev-page-btn" onclick="get_more_candles('saves', firstBarTime, 'prev')">Prev Period</button>
-                <button id="next-page-btn" onclick="get_more_candles('saves', firstBarTime, 'next')">Next Period</button>
-            </div> -->
-
             <div id="canvas-wrapper">
                 <!-- контент canvas-wrapper формируется скриптом-->
                 <canvas id='graph' width='100' height='100'></canvas>
@@ -185,7 +173,6 @@
                 <div id="from-to-text"></div>
                 <div id="candle-info">candle-info</div>
             </div>
-            <!-- <div><input type="range" id="scroll-bar"  min="0" max="100" value="0" oninput="handleScrollBarChange(event)" step="1"></div> -->
             <div>
                 <input type="range" id="scroll-bar" min="0" max="1000" value="0" oninput="handleScrollBarChange(event)" step="1">
             </div>
