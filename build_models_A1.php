@@ -102,7 +102,7 @@ $State['curBar'] = ($selectedBar == 0 || $mode == 'all') ? (nBars - 10) : $selec
 $States = [];
 $States[] = $State; // первый стэйт 
 
-// This code segment represents a part of the main processing cycle that controls the execution of the algorithm through state iteration ($States). Let's look at the key aspects:
+// This code segment represents a part of the main processing cycle that controls the execution of the algorithm through state iteration ($States). Let's look at the key aspects.
 // The main execution cycle: The $toRepeat variable is used to control the repetition of the loop. The cycle continues as long as there is a need for additional processing iterations.
 $toRepeat = true;
 // Inside the main 'while' loop, all states in the $States array are iterated over, and a series of operations based on the value of 'next_step' are performed for each state.
@@ -204,7 +204,7 @@ function step_1($State)
         $state1 = $state2 = $State;
         $state1['v'] = 'high';
         $state2['v'] = 'low';
-        $state2['split'] = $splitCnt++; // J подсчет отпочковавшейся ветки
+        $state2['split'] = $splitCnt++; // подсчет отпочковавшейся ветки Алгоритма
         //$state2['split'] = $splitCnt++;
         return ([$state1, $state2]);
     }
@@ -241,10 +241,10 @@ function step_1($State)
                 if (low($j, $v) < $price && high($j, $v, __LINE__) >= $price) break;
             }
 
-            myLog_selected_bar($State, "Numbers of bars checked: " . ($i - $j - 1) . " Confirming bar (3) = $j"); // "Confirming bar (3)" here - it is bar crossed t.1 level
+            myLog_selected_bar($State, "Numbers of bars checked: " . ($i - $j - 1) . " Confirming bar (3) = $j"); // "bar (3)" is the bar that crossed t.1 level
             // $j -  the bar from which we are looking for a confirming extremum
             
-            // поиск подтверждающего экстремума
+            // Search for confirming extremum
             $PrevTrend_level = low($State['t1'], $v); // объявляем переменную для уровня подтверждающего экстремума (уровень начала предшествующего тренда) и пока что приравниваем её т.1
             for ($k = $j; $k < $i; $k++) {
                 if (
