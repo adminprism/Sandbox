@@ -83,7 +83,7 @@ Graph_settings = {
     downLine: "#f00",
     upLine: "#00f",
     fieldBorder: "#ddd",
-  }, 
+  },
 };
 intervalList = ["1m", "5m", "10m", "15m", "30m", "1h", "1D", "1W"];
 intervalSelected = 1; // индекс в intervalList - значение по умолчанию (при F5)
@@ -259,7 +259,7 @@ $(document).ready(function () {
   });
   graph_position = $("#graph").offset(); // graph - is a canvas ID in the index.php file
 
-  if (Data_settings.n_bar > 0) drawGraph(); 
+  if (Data_settings.n_bar > 0) drawGraph();
 
   penDown = false;
   wasMoved = false; // * Добавлено
@@ -414,9 +414,10 @@ $(document).ready(function () {
       let old_activBar = Data_settings.activeBar;
       Data_settings.activeBar = Data_settings.pointedBar;
 
-      if (ConsoleLoggingOn) console.log(
-        `Clicked bar: old_activBar=${old_activBar}, new activeBar=${Data_settings.activeBar}`
-      );
+      if (ConsoleLoggingOn)
+        console.log(
+          `Clicked bar: old_activBar=${old_activBar}, new activeBar=${Data_settings.activeBar}`
+        );
 
       if (Data_settings.activeBar !== old_activBar) {
         $("#active-bar span").text(Data_settings.activeBar);
@@ -500,7 +501,10 @@ $(document).ready(function () {
         Math.round((scrollValue / 100) * maxScroll) + (Data.barsOnDesk - 1);
 
       // Обновляем cur_bar
-      Data_settings.cur_bar = Math.max(0, Math.min(newCurBar, Data_settings.n_bar - 1));
+      Data_settings.cur_bar = Math.max(
+        0,
+        Math.min(newCurBar, Data_settings.n_bar - 1)
+      );
 
       // Перерисовываем график и обновляем скролл-бар
       drawGraph();
@@ -516,23 +520,29 @@ $(document).ready(function () {
 
   function handleScrollBarChange(event) {
     const scrollBar = document.getElementById("scroll-bar");
-  
+
     if (!scrollBar) {
       console.error("Элемент scroll-bar не найден в DOM.");
       return;
     }
-  
+
     const scrollValue = parseFloat(event.target.value); // Значение scroll-bar
-  
+
     // Рассчитываем cur_bar на основе значения scroll-bar
     const maxScroll = Data_settings.n_bar - Data.barsOnDesk;
     const newCurBar = Math.round(scrollValue) + (Data.barsOnDesk - 1);
-  
+
     // Ограничиваем cur_bar в допустимых пределах
-    Data_settings.cur_bar = Math.max(0, Math.min(newCurBar, Data_settings.n_bar - 1));
-  
-    if (ConsoleLoggingOn) console.log(`handleScrollBarChange: scrollValue=${scrollValue}, newCurBar=${newCurBar}, cur_bar=${Data_settings.cur_bar}`);
-  
+    Data_settings.cur_bar = Math.max(
+      0,
+      Math.min(newCurBar, Data_settings.n_bar - 1)
+    );
+
+    if (ConsoleLoggingOn)
+      console.log(
+        `handleScrollBarChange: scrollValue=${scrollValue}, newCurBar=${newCurBar}, cur_bar=${Data_settings.cur_bar}`
+      );
+
     // Перерисовываем график
     drawGraph();
   }
@@ -563,7 +573,7 @@ function updateScrollBar() {
     return;
   }
 
-// Если количество баров меньше или равно количеству баров на экране, scroll-bar не нужен
+  // Если количество баров меньше или равно количеству баров на экране, scroll-bar не нужен
   if (Data_settings.n_bar <= Data.barsOnDesk) {
     // Если все бары видны, scroll-bar на начальной позиции
     scrollBar.min = 0;
@@ -577,12 +587,15 @@ function updateScrollBar() {
   scrollBar.min = 0;
   scrollBar.max = maxScroll;
 
- // Рассчитываем значение scroll-bar
- const scrollValue = Data_settings.cur_bar - (Data.barsOnDesk - 1);
+  // Рассчитываем значение scroll-bar
+  const scrollValue = Data_settings.cur_bar - (Data.barsOnDesk - 1);
 
   // Устанавливаем значение scroll-bar
   scrollBar.value = scrollValue;
-  if (ConsoleLoggingOn) console.log(`updateScrollBar: cur_bar=${Data_settings.cur_bar}, scrollValue=${scrollValue}, maxScroll=${maxScroll}`);
+  if (ConsoleLoggingOn)
+    console.log(
+      `updateScrollBar: cur_bar=${Data_settings.cur_bar}, scrollValue=${scrollValue}, maxScroll=${maxScroll}`
+    );
 }
 
 function getModelNumString() {
@@ -708,7 +721,7 @@ function get_fragment(type) {
       $("body").css({ cursor: "default" });
       $("#get-data-btn3").css({ cursor: "default" });
       loaderOff();
-      if (ConsoleLoggingOn) console.log('!!! request.statusText :')
+      if (ConsoleLoggingOn) console.log("!!! request.statusText :");
       if (ConsoleLoggingOn) console.log(request);
     })
     .fail(function (jqXHR, textStatus, errorThrown) {
@@ -765,8 +778,8 @@ function parse_data_from_db(data) {
   algorithmCalculated = 2;
   setAlg_num(2);
   Alg2Show = 2;
-  if (ConsoleLoggingOn) console.log(Models)
-  if (ConsoleLoggingOn) console.log(Models2)
+  if (ConsoleLoggingOn) console.log(Models);
+  if (ConsoleLoggingOn) console.log(Models2);
 
   if (ResAJAX["info"]["modelId"] !== "undefined") {
     //запрашивали модель по id
@@ -808,7 +821,6 @@ function parse_data_from_db(data) {
 
   $("#model-info").html("");
 
-  
   drawGraph();
 
   return true;
@@ -870,7 +882,7 @@ function get_candles(type) {
       $("#get-data-btn").css({ cursor: "default" });
       $("#get-data-btn2").css({ cursor: "default" });
       loaderOff();
-      if (ConsoleLoggingOn)  console.log('!!! request.statusText :')
+      if (ConsoleLoggingOn) console.log("!!! request.statusText :");
       if (ConsoleLoggingOn) console.log(request);
     })
     .fail(function (jqXHR, textStatus, errorThrown) {
@@ -886,24 +898,28 @@ function get_candles(type) {
 let lastBarTime = null; // * Глобальная переменная для хранения временной метки последнего бара в функции get_candles
 let firstBarTime = null; // * Объявляем глобальную переменную firstBarTime
 function get_more_candles(type, _firstBarTime, direction) {
-  if (ConsoleLoggingOn) console.log("Начало выполнения функции get_more_candles");
+  if (ConsoleLoggingOn)
+    console.log("Начало выполнения функции get_more_candles");
   if (ConsoleLoggingOn) console.log("Тип запроса:", type);
-  if (ConsoleLoggingOn) console.log("Временная метка переданная в функцию:", _firstBarTime);
+  if (ConsoleLoggingOn)
+    console.log("Временная метка переданная в функцию:", _firstBarTime);
   if (ConsoleLoggingOn) console.log("Направление:", direction);
 
   // Определяем временную метку в зависимости от направления
   let _lastBarTime;
   if (direction === "prev") {
     _lastBarTime = _firstBarTime;
-    if (ConsoleLoggingOn) console.log(
-      "Присвоение lastBarTime исходного значение _firstBarTime",
-      _lastBarTime
-    );
+    if (ConsoleLoggingOn)
+      console.log(
+        "Присвоение lastBarTime исходного значение _firstBarTime",
+        _lastBarTime
+      );
   } else if (direction === "next") {
     // Смещаем lastBarTime на определенное количество баров вперед
     let nBarsOffset = Number($("#nBars4get_fragment").val()) || 10; // Значение по умолчанию 10, если поле пустое
     _lastBarTime = lastBarTime + nBarsOffset * BAR_DURATION; // Предполагаем, что BAR_DURATION - это длительность одного бара в миллисекундах
-    if (ConsoleLoggingOn) console.log("Смещение lastBarTime на", nBarsOffset, "баров вперед");
+    if (ConsoleLoggingOn)
+      console.log("Смещение lastBarTime на", nBarsOffset, "баров вперед");
   }
 
   if (_lastBarTime) {
@@ -913,10 +929,11 @@ function get_more_candles(type, _firstBarTime, direction) {
     return false;
   }
 
-  if (ConsoleLoggingOn) console.log("Временные метки для запроса:", {
-    lastBarTime: lastBarTime,
-    currentFirstBarTime: firstBarTime,
-  });
+  if (ConsoleLoggingOn)
+    console.log("Временные метки для запроса:", {
+      lastBarTime: lastBarTime,
+      currentFirstBarTime: firstBarTime,
+    });
 
   ResAJAX = false;
   $(".next-prev-model-btns").css("display", "none");
@@ -947,7 +964,8 @@ function get_more_candles(type, _firstBarTime, direction) {
     };
   }
 
-  if (ConsoleLoggingOn) console.log("Ajax - запрос будет отправлен с параметрами:", post_data);
+  if (ConsoleLoggingOn)
+    console.log("Ajax - запрос будет отправлен с параметрами:", post_data);
 
   let startTime = new Date(); // Creates a new Date object.
   loaderOn();
@@ -967,14 +985,16 @@ function get_more_candles(type, _firstBarTime, direction) {
 
       // Обрабатываем полученные данные
       if (parse_data(data)) {
-        if (ConsoleLoggingOn) console.log(
-          "Обновленные временные метки после parse_data firstBarTime:",
-          {
-            firstBarTime,
-            lastBarTime,
-          }
-        );
-        if (ConsoleLoggingOn) console.log("Загружено баров:", data.result.length);
+        if (ConsoleLoggingOn)
+          console.log(
+            "Обновленные временные метки после parse_data firstBarTime:",
+            {
+              firstBarTime,
+              lastBarTime,
+            }
+          );
+        if (ConsoleLoggingOn)
+          console.log("Загружено баров:", data.result.length);
       } else {
         console.error("Ошибка при обработке данных");
       }
@@ -1023,34 +1043,44 @@ function parse_data(data) {
   Data_settings.cur_bar = Data_settings.n_bar - 1;
 
   if (ConsoleLoggingOn) console.log("Первый бар данных:", data.result[0]); // Лог для просмотра первого бара
-  if (ConsoleLoggingOn) console.log("Последний бар данных:", data.result[data.result.length - 1]); // Лог для просмотра последнего бара
-  if (ConsoleLoggingOn) console.log("Значение firstBarTime после обновления:", firstBarTime);
-  if (ConsoleLoggingOn) console.log("Значение lastBarTime после обновления:", lastBarTime);
+  if (ConsoleLoggingOn)
+    console.log("Последний бар данных:", data.result[data.result.length - 1]); // Лог для просмотра последнего бара
+  if (ConsoleLoggingOn)
+    console.log("Значение firstBarTime после обновления:", firstBarTime);
+  if (ConsoleLoggingOn)
+    console.log("Значение lastBarTime после обновления:", lastBarTime);
 
-    // Обновляем scroll-bar после загрузки данных
-    updateScrollBar();
+  // Обновляем scroll-bar после загрузки данных
+  updateScrollBar();
 
   drawGraph();
   return true;
 }
 
-document.getElementById("scroll-bar").addEventListener("input", function (event) {
-  const scrollValue = parseFloat(event.target.value); // Значение скролл-бара в процентах
+document
+  .getElementById("scroll-bar")
+  .addEventListener("input", function (event) {
+    const scrollValue = parseFloat(event.target.value); // Значение скролл-бара в процентах
 
-  // Рассчитываем cur_bar на основе значения скролл-бара
-  const maxScroll = Data_settings.n_bar - Data.barsOnDesk; // Максимальное количество баров для прокрутки
-  const newCurBar = Math.round((scrollValue / 100) * maxScroll) + (Data.barsOnDesk - 1);
+    // Рассчитываем cur_bar на основе значения скролл-бара
+    const maxScroll = Data_settings.n_bar - Data.barsOnDesk; // Максимальное количество баров для прокрутки
+    const newCurBar =
+      Math.round((scrollValue / 100) * maxScroll) + (Data.barsOnDesk - 1);
 
-  // Обновляем cur_bar
-  Data_settings.cur_bar = Math.max(0, Math.min(newCurBar, Data_settings.n_bar - 1));
+    // Обновляем cur_bar
+    Data_settings.cur_bar = Math.max(
+      0,
+      Math.min(newCurBar, Data_settings.n_bar - 1)
+    );
 
-  // Перерисовываем график
-  drawGraph();
-});
+    // Перерисовываем график
+    drawGraph();
+  });
 
 function drawGraph() {
   // отрисовка графика баров + сигналы по Graph_settings , Data_settings
-  if (ConsoleLoggingOn) console.log(`Drawing graph with activeBar=${Data_settings.activeBar}`);
+  if (ConsoleLoggingOn)
+    console.log(`Drawing graph with activeBar=${Data_settings.activeBar}`);
   var i,
     max_v = 0,
     min_v = 10000000000;
@@ -1112,7 +1142,8 @@ function drawGraph() {
   // Graph_settings.width - Graph_settings.right;
   Data_settings.X_right = X_right;
 
-  if (ConsoleLoggingOn) console.log(`
+  if (ConsoleLoggingOn)
+    console.log(`
     Calculated X_right=${X_right},
     Graph width=${Graph_settings.width},
     Graph right margin=${Graph_settings.right},
@@ -1241,8 +1272,6 @@ function drawGraph() {
   drawModels(graph_context, X_right, step, min_v, max_v, fieldHeight, n_bars);
 }
 
-
-
 // Функция, обрабатывающая событие
 function wheel(event) {
   if (!graph_position) return; // Проверяем, есть ли данные о положении графика
@@ -1340,7 +1369,14 @@ function build_models(algorithm_num) {
   if (Data_settings["n_bar"] > MIN_BAR_CNT) {
     // вызов процедуры расчета моделей
     let startTime = new Date();
-    if (ConsoleLoggingOn) console.log((new Date()) + " нажали " + algorithm_num+ " wic= "+whatIsCalculatingNow);
+    if (ConsoleLoggingOn)
+      console.log(
+        new Date() +
+          " нажали " +
+          algorithm_num +
+          " wic= " +
+          whatIsCalculatingNow
+      );
     whatIsCalculatingNow = algorithm_num;
     let log_ = 0;
     if ($("#chk-log").is(":checked")) log_ = 1;
@@ -1350,7 +1386,7 @@ function build_models(algorithm_num) {
       log: log_,
     };
 
-    if (ConsoleLoggingOn)  console.log(location);
+    if (ConsoleLoggingOn) console.log(location);
     $("body").css({ cursor: "wait" });
     $("#build-btn").css({ cursor: "wait" });
     loaderOn(); //блокировка экрана, показ вращающегося лоадера
@@ -1367,7 +1403,7 @@ function build_models(algorithm_num) {
         Chart: JSON.stringify(Data),
         paramArr: paramArr_,
         Models1: Models_Alg1,
-      }, 
+      },
       dataType: "json",
     })
       .done(function (data, textStatus, jqXHR) {
@@ -1579,7 +1615,8 @@ document.addEventListener("DOMContentLoaded", function () {
           drawGraph();
         }
       } else {
-        if (ConsoleLoggingOn) console.log("Cursor outside the chart or no data"); // Отладочный лог
+        if (ConsoleLoggingOn)
+          console.log("Cursor outside the chart or no data"); // Отладочный лог
       }
     }
   }

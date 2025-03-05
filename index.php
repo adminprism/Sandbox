@@ -1,41 +1,42 @@
 <!DOCTYPE html>
 <html>
 
-    <div class="window">
-        <head>
-            <meta charset='UTF-8'>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <script src='js/moving_box_css.js'></script>
-            <link rel="stylesheet" href="css/style.css">
-            <!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script> -->
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-        
-            <script>
-                //скрипт для передачи параметров для запуска страницы
-                ver = "1.0";
-            </script>
-            <title>Marketpawns Sandbox </title>
-        </head>
-        
-        <body onmousemove='body_m_move(event)' onmouseup='body_m_up(event)' onmousedown='body_m_down(event)'>
-        
+<div class="window">
+
+    <head>
+        <meta charset='UTF-8'>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="css/style.css">
+        <!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script> -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <!-- <script src='js/moving_box_css.js'></script> -->
+
+        <script>
+            //скрипт для передачи параметров для запуска страницы
+            ver = "1.0";
+        </script>
+        <title>Marketpawns Sandbox </title>
+    </head>
+
+    <!-- <body onmousemove='body_m_move(event)' onmouseup='body_m_up(event)' onmousedown='body_m_down(event)'> -->
+
         <header class="header">
-                <div class="container_header">
-                    <a class="logo" href="#">
-                        <!-- <img src="/public/images/logo.png" alt="" /> -->
-                        <img src="/public/images/SANDBOX.png" alt="" />
-                    </a>
-        
-                    <ul class="nav-right">
-                        <li><a href="https://marketpawns.com">Marketpawns</a></li>
-                        <li><a href="https://wiki.marketpawns.com/index.php?title=Main_Page">Wiki</a></li>
-                        <!-- <li data-bs-toggle="modal" data-bs-target="#registerModal"><a href="#">Register</a></li>
+            <div class="container_header">
+                <a class="logo" href="#">
+                    <!-- <img src="/public/images/logo.png" alt="" /> -->
+                    <img src="/public/images/SANDBOX.png" alt="" />
+                </a>
+
+                <ul class="nav-right">
+                    <li><a href="https://marketpawns.com">Marketpawns</a></li>
+                    <li><a href="https://wiki.marketpawns.com/index.php?title=Main_Page">Wiki</a></li>
+                    <!-- <li data-bs-toggle="modal" data-bs-target="#registerModal"><a href="#">Register</a></li>
                         <li data-bs-toggle="modal" data-bs-target="#signinModal"><a href="#">Sign in</a></li> -->
-                    </ul>
-                </div>
-        
-            </header>
-        <div id='mB1' class='moving-box'>
+                </ul>
+            </div>
+
+        </header>
+        <!-- <div id='mB1' class='moving-box'>
             <p class='moving-box-title'>Information</p>
             <div class='moving-box-content'>
                 <div id="debugPopUp">
@@ -49,10 +50,9 @@
                     <div class='popup-element' id="debugPopUp-main">
                         (пусто)
                     </div>
-                    <!-- <div class='popup-element' id="debugPopUp-bottom"></div> -->
                 </div>
             </div>
-        </div>
+        </div> -->
         <div id="source-switch">Data source:&nbsp&nbsp&nbsp
             <form id="form-source">
                 <input id="rb-forex" type="radio" name="source" value="1" onclick="changeSource('forex')"> FOREX data (Finam) online&nbsp&nbsp</input>
@@ -112,37 +112,84 @@
             define("WRITE_LOG", 0);
             require_once 'login_4js.php';
             //echo $connection->error;
-            if ($Last_Error == "") {
-                $result = queryMysql("select name from chart_names order by name");
-                if (!$result || $result->num_rows == 0) echo "ERROR! No data in DB";
-                else {
-                    echo '<select id="select-name" name="name" size="1">';
-                    while ($Rec = $result->fetch_assoc()) {
-                        //echo $Rec['name']."<br>";
-                        echo '<option value="' . $Rec['name'] . '" selected>' . $Rec['name'] . '</option>';
+            // Проверка на ошибки подключения
+
+            if (isset($Last_Error) && $Last_Error == "") {
+                // if ($Last_Error == "") {
+
+                if (!$connection) {
+                    echo "❌ Database connection failed: " . mysqli_connect_error() . "<br>";
+                } elseif (!function_exists('queryMysql')) {
+                    echo "❌ Функция queryMysql() не найдена!<br>";
+                } else {
+                    // if (!$connection) {
+                    //     die("Database connection failed: " . mysqli_connect_error());
+                    // }
+
+                    // if (!function_exists('queryMysql')) {
+                    //     die("Функция queryMysql() не найдена!");
+                    // }
+
+                    var_dump($connection);
+
+                    try {
+                        // $result = queryMysql("select name from chart_names order by name");
+                        $sql = "SELECT name FROM chart_names ORDER BY name";
+                        $result = $connection->query($sql);
+
+                        if (!$result) {
+                            throw new Exception("SQL ERROR: " . $connection->error);
+                            // die("SQL ERROR: " . $connection->error);
+                        }
+
+                        if (!$result || $result->num_rows == 0) {
+                            echo "⚠️ WARNING: No data in DB<br>";
+                            // echo "ERROR! No data in DB";
+                        } else {
+                            // else {
+                            echo '<select id="select-name" name="name" size="1">';
+                            while ($Rec = $result->fetch_assoc()) {
+                                //echo $Rec['name']."<br>";
+                                echo '<option value="' . htmlspecialchars($Rec['name']) . '" selected>' . htmlspecialchars($Rec['name']) . '</option>';
+                                // echo '<option value="' . $Rec['name'] . '" selected>' . $Rec['name'] . '</option>';
+                            }
+
+                            // $result = queryMysql("select name from chart_names order by name");
+                            // if (!$result || $result->num_rows == 0) echo "ERROR! No data in DB";
+                            // else {
+                            //     echo '<select id="select-name" name="name" size="1">';
+                            //     while ($Rec = $result->fetch_assoc()) {
+                            //         //echo $Rec['name']."<br>";
+                            //         echo '<option value="' . $Rec['name'] . '" selected>' . $Rec['name'] . '</option>';
+                            //     }
+                            echo '</select>';
+                            //echo '<script>$("#rb-mysql-env").css("display", "none");</script>';
+                            echo '<label id="lastBar4get_fragment_label">&nbspData/time of the last bar:&nbsp</label><input id="lastBar4get_fragment" type="text">';
+                            echo '<label id="modelId4get_fragment_label">&nbspModels Id:&nbsp</label><input id="modelId4get_fragment" type="text">';
+                            echo '<label id="nBars4get_fragment_label">&nbspBars quantity:&nbsp</label><input id="nBars4get_fragment" type="text" value="1000" size="5">';
+                            echo "&nbsp";
+                            echo '<button id="get-data-btn3" onclick="get_fragment()">&nbspRequest fragment from DB&nbsp</button>';
+                            echo '<div id="showLevels">';
+                            echo '   Show levels:';
+                            echo '<form id="lvl-switch">';
+                            echo '<input id="showAim0" type="radio" name="AimshowSwith" value="none" onclick="drawGraph()">No</input>';
+                            echo  '<input id="showAim1" type="radio" name="AimshowSwith" value="P6aims" onclick="drawGraph()">P6aims</input>';
+                            echo  '<input id="showAim2" type="radio" name="AimshowSwith" value=\'P6aims' . '"' . '\' onclick="drawGraph()">P6aims"</input>';
+                            echo  '<input id="showAim3" type="radio" name="AimshowSwith" value="auxP6aims" onclick="drawGraph()">auxP6aims</input>';
+                            echo  '<input id="showAim4" type="radio" name="AimshowSwith" value="auxP6aims\'" onclick="drawGraph()">auxP6aims\'</input>';
+                            echo '</form>';
+                            echo '</div>';
+                        }
+                    } catch (Exception $e) {
+                        echo "⚠️ Exception: " . $e->getMessage() . "<br>";
                     }
-                    echo '</select>';
-                    //echo '<script>$("#rb-mysql-env").css("display", "none");</script>';
-                    echo '<label id="lastBar4get_fragment_label">&nbspData/time of the last bar:&nbsp</label><input id="lastBar4get_fragment" type="text">';
-                    echo '<label id="modelId4get_fragment_label">&nbspModels Id:&nbsp</label><input id="modelId4get_fragment" type="text">';
-                    echo '<label id="nBars4get_fragment_label">&nbspBars quantity:&nbsp</label><input id="nBars4get_fragment" type="text" value="1000" size="5">';
-                    echo "&nbsp";
-                    echo '<button id="get-data-btn3" onclick="get_fragment()">&nbspRequest fragment from DB&nbsp</button>';
-                    echo '<div id="showLevels">';
-                    echo '   Show levels:';
-                    echo '<form id="lvl-switch">';
-                    echo '<input id="showAim0" type="radio" name="AimshowSwith" value="none" onclick="drawGraph()">No</input>';
-                    echo  '<input id="showAim1" type="radio" name="AimshowSwith" value="P6aims" onclick="drawGraph()">P6aims</input>';
-                    echo  '<input id="showAim2" type="radio" name="AimshowSwith" value=\'P6aims' . '"' . '\' onclick="drawGraph()">P6aims"</input>';
-                    echo  '<input id="showAim3" type="radio" name="AimshowSwith" value="auxP6aims" onclick="drawGraph()">auxP6aims</input>';
-                    echo  '<input id="showAim4" type="radio" name="AimshowSwith" value="auxP6aims\'" onclick="drawGraph()">auxP6aims\'</input>';
-                    echo '</form>';
-                    echo '</div>';
                 }
-            } else echo $Last_Error;
+            } else {
+                echo "❌ Database connection error: " . (isset($Last_Error) ? $Last_Error : "Unknown error") . "<br>";
+            }
+            // } else echo $Last_Error;
             ?>
         </div>
-
         <hr />
         <div class="desk">
             <span><strong>To move chart:</strong> drag it with mouse <strong>Scale: </strong> Mouse wheel </span>
@@ -211,21 +258,21 @@
                 debug
             </div>
         </div>
+</div>
+
+<div class="parent_wait">
+    <div class="block_wait">
+        <p id="loader-text">0.0</p>
     </div>
-
-    <div class="parent_wait">
-        <div class="block_wait">
-            <p id="loader-text">0.0</p>
-        </div>
-    </div>
+</div>
 
 
 
 
 
-    <script src="js/functions.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/drawModels.js"></script>
+<script src="js/functions.js"></script>
+<script src="js/main.js"></script>
+<script src="js/drawModels.js"></script>
 </body>
 
 </html>
