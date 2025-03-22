@@ -280,6 +280,32 @@ $(document).ready(function () {
       graph_position = $("#graph").offset(); // <canvas id='graph'
       var xpos = event.pageX - graph_position.left;
       var ypos = event.pageY - graph_position.top;
+
+      // Проверка, что Data[index] определен
+      if (Data[index]) {
+        if (!("open_time" in Data[index])) {
+          console.error(
+            `Ошибка: open_time отсутствует в Data[${index}]`,
+            Data[index]
+          );
+        } else {
+          d1 = get_date_str(timestampToDate(Data[index].open_time), 0);
+        }
+
+        if (!("close_time" in Data[index])) {
+          console.error(
+            `Ошибка: close_time отсутствует в Data[${index}]`,
+            Data[index]
+          );
+        } else {
+          d2 = get_date_str(timestampToDate(Data[index].close_time + 1), 0);
+        }
+
+        // ... (остальной код)
+      } else {
+        console.error(`Ошибка: Data[${index}] не определен`, Data);
+      }
+
       if (penDown == false) {
         // Moving the guiding liens on the chart
         if (
@@ -406,6 +432,13 @@ $(document).ready(function () {
           updateScrollBar(); // * Обновляем scroll-bar при перемещении графика
         }
       }
+      // }
+    } else {
+      console.error(
+        `Ошибка: индекс ${
+          Data_settings.cur_bar - nbar
+        } выходит за границы массива Data`
+      );
     }
   });
   $("#graph-cover").click(function (event) {
