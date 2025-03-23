@@ -20,8 +20,8 @@ define("WRITE_LOG", 9);
 error_reporting(-1); //error_reporting(E_ALL & ~E_NOTICE);
 ini_set('display_errors', 'On');
 
-require_once 'build_models_common.php';
-require_once 'ModelBuilderA1.php'; // Обновленное имя файла
+require_once __DIR__ . '/src/builders/build_models_common.php';
+require_once __DIR__ . '/src/builders/ModelBuilderA1.php'; // Обновленное имя файла
 
 $modelNextId = 1;
 // In this segment of the code, initialization and configuration of the $res array continues, which seems to be used to collect various types of results and script execution logs. 

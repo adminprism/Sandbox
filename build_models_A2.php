@@ -25,10 +25,12 @@ define("WRITE_LOG", 9);
 error_reporting(-1); //error_reporting(E_ALL & ~E_NOTICE);
 ini_set('display_errors', 'On');
 
-require_once 'build_models_common.php';
+// require_once 'build_models_common.php';
 
-// В начале файла после других require
-require_once 'ModelBuilderA2.php';
+// // В начале файла после других require
+// require_once 'ModelBuilderA2.php';
+require_once __DIR__ . '/src/builders/build_models_common.php';
+require_once __DIR__ . '/src/builders/ModelBuilderA2.php'; // Обновленное имя файла
 
 $modelNextId = 1;
 $res = []; // ветвистый асс. массив результата
