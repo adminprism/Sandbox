@@ -1,6 +1,7 @@
 <?php
 
-require_once 'BasicModelBuilder.php';
+// require_once 'BasicModelBuilder.php';
+require_once __DIR__ . '/BasicModelBuilder.php';
 
 class ModelBuilderA1 extends BasicModelBuilder {
     private const ALGORITHM_NUM = 1;
