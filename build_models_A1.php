@@ -21,7 +21,7 @@ error_reporting(-1); //error_reporting(E_ALL & ~E_NOTICE);
 ini_set('display_errors', 'On');
 
 require_once 'build_models_common.php';
-require_once 'ModelBuilder.php';
+require_once 'ModelBuilderA1.php'; // Обновленное имя файла
 
 $modelNextId = 1;
 // In this segment of the code, initialization and configuration of the $res array continues, which seems to be used to collect various types of results and script execution logs. 
@@ -1838,7 +1838,7 @@ function fix_model($State, $name, $wo_t5 = false)
 { // фиксируем модель - пополняем общую коллекцию моделей в $res['Models']
     global $res, $modelNextId, $maxBar4Split, $curSplit, $pips;
     
-    $modelBuilder = new ModelBuilder(
+    $modelBuilder = new ModelBuilderA1( // Обновленное имя класса
         $State, 
         $res, 
         $modelNextId, 

@@ -1,6 +1,6 @@
 <?php
 
-class ModelBuilder {
+class ModelBuilderA1 {
     private $state;
     private $res;
     private $modelNextId;
@@ -31,6 +31,8 @@ class ModelBuilder {
         $model = [];
 
         // Определяем G3
+        /* The above PHP code is setting the value of the 'G3' key in the state parameter to the result
+        of the getModelTrendType_G3() method. */
         $this->state['param']['G3'] = $this->getModelTrendType_G3();
 
         // Добавляем _CROSS_POINT
