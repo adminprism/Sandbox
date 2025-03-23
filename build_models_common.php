@@ -1021,7 +1021,7 @@ function setAuxParams($models)
                 else $models[$bar][$pk]['param']['EAMP3'] = 'EAM3\' out of Base';
             } else $models[$bar][$pk]['param']['EAMP3'] = 'EAM3';
         }
-    // 5. (п.8) Расположение т.3(3’) вспомогательной МП
+    // 5. (п.8) Расположение т.3(3') вспомогательной МП
     foreach ($models as $bar => $models_at_bar) foreach ($models_at_bar as $pk => $pv) {
         $v = $pv['v'];
         if (
@@ -1048,7 +1048,7 @@ function setAuxParams($models)
         // else $models[$bar][$pk]['param']['auxP3'] = null;
         else unset($models[$bar][$pk]['param']['auxP3']);
     }
-    // 6. (п.9) Параметр о построении через т. 3 или т. 3’ для основных
+    // 6. (п.9) Параметр о построении через т. 3 или т. 3' для основных
     foreach ($models as $bar => $models_at_bar)
         foreach ($models_at_bar as $pk => $pv) {
             if (isset($pv['t3\''])) $models[$bar][$pk]['param']['P3'] = '3\'';
@@ -1075,7 +1075,7 @@ function setAuxParams($models)
         if (isset($pv['Presupp']) && count($pv['Presupp']) > 0) $models[$bar][$pk]['param']['E6'] = "Pres";
         else $models[$bar][$pk]['param']['E6'] = "NoPres";
     }
-    // 9.(п.12) Соотношение уровня между т.2 (2’)-т.3 и т.2(2’)-уровень расчетной т.6 для ВМП, ЧМП, МДР/ЧМП.
+    // 9.(п.12) Соотношение уровня между т.2 (2')-т.3 и т.2(2')-уровень расчетной т.6 для ВМП, ЧМП, МДР/ЧМП.
     foreach ($models as $bar => $models_at_bar) foreach ($models_at_bar as $pk => $pv) {
         $v = $pv['v'];
         if (in_array($pv['param']['G1'], ['EAM', 'AM', 'AM/DBM'])) { //Данный параметр рассчитывается для ВМП, ЧМП и МДР/ЧМП.
@@ -1092,7 +1092,7 @@ function setAuxParams($models)
             }
         }
     }
-    // 10. (п.13) Соотношение уровней т.2 (2’)-т.3 и т.2(2’)-уровень расчетной т.6 для вспомогательных моделей.
+    // 10. (п.13) Соотношение уровней т.2 (2')-т.3 и т.2(2')-уровень расчетной т.6 для вспомогательных моделей.
     foreach ($models as $bar => $models_at_bar) foreach ($models_at_bar as $pk => $pv) {
         $v = $pv['v'];
         // if(in_array($pv['param']['G1'],['EAM','AM','AM/DBM'])){ //Данный параметр рассчитывается для ВМП, ЧМП и МДР/ЧМП.
@@ -1158,7 +1158,7 @@ function setAuxParams($models)
                 $models[$bar][$pk]['param']["ll2'5to56aux"] = round($dist_2_5 / $dist_5_6, 1);
         } else $models[$bar][$pk]['param']["ll2'5to56aux"] = "NoAM";
     }
-    // 15. (п.21) Параметр, отражающий построена ли модель через т.5 или т.5”
+    // 15. (п.21) Параметр, отражающий построена ли модель через т.5 или т.5"
     if (ALGORITHM_NUM == 2)
         foreach ($models as $bar => $models_at_bar) foreach ($models_at_bar as $pk => $pv) {
             // if (!isset($pv['t5"']))$models[$bar][$pk]['param']['EAM5"'] = 'EAMtl5"';
@@ -1203,7 +1203,7 @@ function setAuxParams($models)
 
             $dist_3x_t5 = abs($li['bar'] - $pv[$t5name]);
             $dist_t2_3x = abs($li['bar'] - $pv[$t2name]);
-            $models[$bar][$pk]['param']["ll2'3#5"] = round($dist_3x_t5 / $dist_t2_3x, 2); // расстояние по времени от т.3# до т.5 (или т.5’ если модель построена через т.5’) делить на расстояние от т.2 (или 2’) до т.3#
+            $models[$bar][$pk]['param']["ll2'3#5"] = round($dist_3x_t5 / $dist_t2_3x, 2); // расстояние по времени от т.3# до т.5 (или т.5' если модель построена через т.5') делить на расстояние от т.2 (или 2') до т.3#
 
             if (ALGORITHM_NUM == 1 || isset($pv['param']['calcP6t']) && isset($pv['param']['calcP6t'])) { //  The code checks if either ALGORITHM_NUM is equal to 1 or if the keys calcP6t or auxP6t exist in the $pv array. If either of these conditions is true, it proceeds to calculate and store values in the $models array.
 
@@ -1213,7 +1213,7 @@ function setAuxParams($models)
                 else $dist_t5_P6 = abs($pv['param']['auxP6t'] - $pv[$t5name]);
 
                 // The result is then divided by $dist_t2_3x and rounded to 2 decimal places, and stored in the $models array under the key "ll2'3#56".
-                $models[$bar][$pk]['param']["ll2'3#56"] = round($dist_t5_P6 / $dist_t2_3x, 2); // расстояние по времени от т.5(или т.5’) до узла т.6 делить на расстояние от т.2 (или т.2’) до т.3#
+                $models[$bar][$pk]['param']["ll2'3#56"] = round($dist_t5_P6 / $dist_t2_3x, 2); // расстояние по времени от т.5(или т.5') до узла т.6 делить на расстояние от т.2 (или т.2') до т.3#
 
                 // Next, the code calculates the value of $level_dist_3x_t2 as the absolute difference between the absolute value of $li['level'] (p3# level) and the absolute value of p2/p2'.
                 $level_dist_3x_t2 = abs(abs($li['level']) - abs(high($pv[$t2name], $v)));
@@ -1236,7 +1236,7 @@ function setAuxParams($models)
             }
             $level_dist_t4_t5 = abs(high($pv['t4'], $v) - low($pv[$t5name], $v));
             if ($level_dist_t4_t5 * 100 < $level_dist_3x_t2) $models[$bar][$pk]['param']["lvl23#45"] = 100;
-            else $models[$bar][$pk]['param']["lvl23#45"] = round($level_dist_3x_t2 / $level_dist_t4_t5, 2); //cоотношение расстояния между уровнями т.3# и т.2(2') к расстоянию между уровнями т.4 и т.5’
+            else $models[$bar][$pk]['param']["lvl23#45"] = round($level_dist_3x_t2 / $level_dist_t4_t5, 2); //cоотношение расстояния между уровнями т.3# и т.2(2') к расстоянию между уровнями т.4 и т.5'
 
             if (isset($pv['param']['auxP6'])) {
                 $level_dist_t5_P6aux = abs(abs(low($pv['t5'], $v)) - abs($pv['param']['auxP6']));
@@ -1254,7 +1254,7 @@ function setAuxParams($models)
             $val1 = abs(low($pv['t3'], $v) - low($pv['t5'], $v));
             $val2 = abs(abs(low($pv['t5'], $v)) - abs($pv['param'][$field_name]));
             if ($val2 * 100 < $val1) $models[$bar][$pk]['param']["ParE"] = 100;
-            else $models[$bar][$pk]['param']["ParE"] = round($val1 / $val2, 2); //cоотношение расстояния между уровнями т.3# и т.2(2') к расстоянию между уровнями т.4 и т.5’
+            else $models[$bar][$pk]['param']["ParE"] = round($val1 / $val2, 2); //cоотношение расстояния между уровнями т.3# и т.2(2') к расстоянию между уровнями т.4 и т.5'
         }
     }
     // 19. Дополнительно 20201103: Соотношение уровней т.2-т.3 и т.4-т.5
@@ -1544,10 +1544,10 @@ function defineG1($State)
     $LCs = LCs($State);
     $t6_ = linesIntersection($LT, $LCs);
     $State['param']['G1_sd'] = 1;
-    if (isset($State['t2\''])) { // испр.алг - если нашли т2' //7.1.В случае если ЛЦ построена через т.2 (а не через т.2’, т.е. линия от через точки т.2 и т.4) не имеет пересечения с ценой на участке т.1-т.2
+    if (isset($State['t2\''])) { // испр.алг - если нашли т2' //7.1.В случае если ЛЦ построена через т.2 (а не через т.2', т.е. линия от через точки т.2 и т.4) не имеет пересечения с ценой на участке т.1-т.2
 
         if ($t6_) { // есть пересечение справа
-            if ($t6_['bar'] > $State['t4']) { // 7.1.1. Точка пересечения ЛТ и ЛЦ’ лежит правее т.4. В данном случае точка пересечения линий является расчетной точкой 6 (далее - расчетная т.6).), то программа рассчитывает соотношение отрезков времени от т.1 до т.4 и от т.4 до расчетной т.6 для ЧМП.
+            if ($t6_['bar'] > $State['t4']) { // 7.1.1. Точка пересечения ЛТ и ЛЦ' лежит правее т.4. В данном случае точка пересечения линий является расчетной точкой 6 (далее - расчетная т.6).), то программа рассчитывает соотношение отрезков времени от т.1 до т.4 и от т.4 до расчетной т.6 для ЧМП.
                 $State['param']['G1'] = "NA_7_1_1";
 
                 $P6 = $State['param']['calcP6'] = round(abs($t6_['level']), 5);
