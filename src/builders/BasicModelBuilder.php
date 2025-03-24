@@ -8,6 +8,8 @@
  * - Model validation
  * - Logging functionality
  */
+require_once __DIR__ . '/ModelsLinesCalculator.php';
+
 class BasicModelBuilder {
     protected $state;
     protected $res;
@@ -16,6 +18,7 @@ class BasicModelBuilder {
     protected $curSplit;
     protected $pips;
     protected $chart;
+    protected $linesCalculator;
 
     // Общие константы
     protected const KEYS_LIST_STATIC = "v,mode,curBar,next_step,cnt,flat_log,status,param,split";
@@ -35,6 +38,9 @@ class BasicModelBuilder {
         $this->curSplit = $curSplit;
         $this->pips = $pips;
         $this->chart = $Chart;
+        
+        $this->linesCalculator = new ModelsLinesCalculator($this->chart, $this->pips);
+        $this->linesCalculator->setState($this->state);
     }
 
     // Базовые методы для работы с графиком
@@ -52,48 +58,15 @@ class BasicModelBuilder {
 
     // Методы для работы с линиями
     protected function getLT() {
-        $v = $this->state['v'];
-        $t3_ = (isset($this->state['t3\''])) ? 't3\'' : 't3';
-        return [
-            'bar' => $this->state['t1'],
-            'level' => $this->low($this->state['t1'], $v),
-            'angle' => ($this->low($this->state[$t3_], $v) - $this->low($this->state['t1'], $v)) 
-                      / ($this->state[$t3_] - $this->state['t1'])
-        ];
+        return $this->linesCalculator->getTrendLine();
     }
 
     protected function getLCs() {
-        $v = $this->state['v'];
-        $t2_ = (isset($this->state['t2\''])) ? 't2\'' : 't2';
-        return [
-            'bar' => $this->state[$t2_],
-            'level' => $this->high($this->state[$t2_], $v),
-            'angle' => ($this->high($this->state['t4'], $v) - $this->high($this->state[$t2_], $v)) 
-                      / ($this->state['t4'] - $this->state[$t2_])
-        ];
+        return $this->linesCalculator->getAimLine();
     }
 
     protected function linesIntersection($line1, $line2) {
-        if (abs($line1['angle'] - $line2['angle']) < 0.000000001) {
-            return false;
-        }
-
-        $k1 = $line1['angle'];
-        $k2 = $line2['angle'];
-        $b1 = $line1['level'] - $k1 * $line1['bar'];
-        $b2 = $line2['level'] - $k2 * $line2['bar'];
-        
-        $x = ($b2 - $b1) / ($k1 - $k2);
-        $y = $k1 * $x + $b1;
-        
-        if (!is_finite($x) || !is_finite($y)) {
-            return false;
-        }
-        
-        return [
-            'bar' => $x,
-            'level' => $y
-        ];
+        return $this->linesCalculator->findLinesIntersection($line1, $line2);
     }
 
     protected function getModelTrendType_G3() {
@@ -158,7 +131,7 @@ class BasicModelBuilder {
     }
 
     protected function lineLevel($line, $bar) {
-        return $line['level'] + ($bar - $line['bar']) * $line['angle'];
+        return $this->linesCalculator->calculateLineLevel($line, $bar);
     }
 
     protected function is_extremum($bar, $v) {
@@ -239,5 +212,10 @@ class BasicModelBuilder {
         }
 
         return trim($points);
+    }
+
+    protected function setState($state) {
+        $this->state = $state;
+        $this->linesCalculator->setState($state);
     }
 } 
