@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * ModelBuilderA2 - Implementation of Algorithm 2 for model building
+ * 
+ * Simplified version of ModelBuilderA1 that maintains core algorithm logic
+ * while reducing complexity
+ */
 // require_once 'BasicModelBuilder.php';
 require_once __DIR__ . '/BasicModelBuilder.php';
 

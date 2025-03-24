@@ -1,4 +1,17 @@
 <?php
+
+/** This file contains common functions and constants used in the model building process.
+ * 
+ * It includes:
+ * Shared constants and functions for model building algorithms.
+ * Chart analysis functions
+ * Line intersection calculation
+ * Debug and logging functions
+ * Error handling
+ * Shutdown function
+ * Timezone setting
+ * Constants for pip size and minimum pips
+ */
 ini_set('date.timezone', 'Europe/Moscow');
 define("EXS_APPROACH_IN_PIPS", 10); // размер в пипсах для определения подхода к УПБ при расчете TLexs13' , TLexs3'4 , ALexs12' , ALexs2'4 , auxTLexs , auxALexs
 if (!defined("MIN_PIPS"))

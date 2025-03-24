@@ -1,5 +1,13 @@
 <?php
-
+/**
+ * BasicModelBuilder - Base class for model building algorithms
+ * 
+ * This class provides common functionality for all model builders including:
+ * - Chart data analysis
+ * - Line calculations
+ * - Model validation
+ * - Logging functionality
+ */
 class BasicModelBuilder {
     protected $state;
     protected $res;

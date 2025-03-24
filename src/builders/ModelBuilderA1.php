@@ -1,5 +1,13 @@
 <?php
-
+/**
+ * ModelBuilderA1 - Implementation of Algorithm 1 for model building
+ * 
+ * This class extends the BasicModelBuilder class and implements the specific
+ * logic for Algorithm 1. It includes:
+ * - Model fixing
+ * - Model validation
+ * - Parameter calculation
+ */
 // require_once 'BasicModelBuilder.php';
 require_once __DIR__ . '/BasicModelBuilder.php';
 
