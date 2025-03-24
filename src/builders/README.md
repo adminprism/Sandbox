@@ -1,13 +1,12 @@
 # Документация по структуре проекта Model Builders
 
 ## Структура директорий 
-src/
-└── builders/
+src/builders/
 ├── BasicModelBuilder.php
 ├── ModelBuilderA1.php
 ├── ModelBuilderA2.php
+├── ModelsLinesCalculator.php
 └── build_models_common.php
-
 ## Описание файлов
 
 ### BasicModelBuilder.php
@@ -41,6 +40,35 @@ src/
 - Константа `ALGORITHM_NUM = 2`
 - Упрощенная версия ModelBuilderA1
 - Сохраняет основную логику алгоритма без изменений
+
+### ModelsLinesCalculator.php
+Handles all line-related calculations for models:
+- Calculates trend lines and aim lines
+- Finds line intersections
+- Validates line breaks and touches
+- Manages auxiliary lines
+
+Key features:
+```php
+// Initialize calculator
+$calculator = new ModelsLinesCalculator($chart, $pips);
+
+// Get trend line parameters
+$trendLine = $calculator->getTrendLine();
+
+// Calculate line intersections
+$intersection = $calculator->findLinesIntersection($line1, $line2);
+
+// Validate line breaks
+$isBreak = $calculator->validateLineBreak($line, $bar, $direction);
+```
+
+## Line Types
+ModelsLinesCalculator supports:
+- Trend lines (LINE_TYPE_TREND)
+- Aim lines (LINE_TYPE_AIM)
+- Auxiliary trend lines (LINE_TYPE_AUX_TREND)
+- Auxiliary aim lines (LINE_TYPE_AUX_AIM)
 
 ### build_models_common.php
 Содержит общие функции и константы, используемые всеми построителями моделей.
@@ -127,3 +155,54 @@ CALC_G3_DEPTH    // Глубина поиска при определении G3
 3. Для добавления новой функциональности:
    - Добавить методы в BasicModelBuilder
    - При необходимости переопределить в дочерних классах 
+
+   
+### Working with Lines
+```php
+// Get trend line
+$trendLine = $builder->getLinesCalculator()->getTrendLine();
+
+// Calculate line intersection
+$intersection = $builder->getLinesCalculator()->findLinesIntersection($trendLine, $aimLine);
+
+// Check line break
+$isBreak = $builder->getLinesCalculator()->validateLineBreak($line, $bar, 'low');
+```
+
+## Extending Functionality
+
+### Adding New Algorithms
+1. Create new class extending BasicModelBuilder
+2. Implement required methods
+3. Add specific line calculations if needed
+
+### Adding New Line Types
+1. Add new constants to ModelsLinesCalculator
+2. Implement calculation methods
+3. Add validation methods if required
+
+## Best Practices
+- Always use ModelsLinesCalculator for line-related calculations
+- Maintain proper state management
+- Follow logging conventions
+- Use provided constants instead of hard-coded values
+
+## Dependencies
+- PHP 7.0 or higher
+- Proper file structure in src/builders/
+- Correct path configuration
+
+## Testing
+- Validate line calculations
+- Check model building results
+- Verify state management
+- Test line intersections and breaks
+
+## Maintenance
+Regular checks for:
+- Line calculation accuracy
+- Model validation
+- State consistency
+- Logging functionality
+
+For more detailed information about specific components or usage examples, please refer to the individual class documentation.
