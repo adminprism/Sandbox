@@ -9,6 +9,7 @@
  * - Logging functionality
  */
 require_once __DIR__ . '/ModelsLinesCalculator.php';
+require_once __DIR__ . '/StateManager.php';
 
 class BasicModelBuilder {
     protected $state;
@@ -19,6 +20,7 @@ class BasicModelBuilder {
     protected $pips;
     protected $chart;
     protected $linesCalculator;
+    protected $stateManager;
 
     // Общие константы
     protected const KEYS_LIST_STATIC = "v,mode,curBar,next_step,cnt,flat_log,status,param,split";
@@ -41,6 +43,15 @@ class BasicModelBuilder {
         
         $this->linesCalculator = new ModelsLinesCalculator($this->chart, $this->pips);
         $this->linesCalculator->setState($this->state);
+        
+        $this->stateManager = new StateManager(
+            $res,
+            $modelNextId,
+            $maxBar4Split, 
+            $curSplit,
+            $Chart,
+            $pips
+        );
     }
 
     // Базовые методы для работы с графиком
@@ -114,11 +125,13 @@ class BasicModelBuilder {
 
     // Базовая реализация методов, которые могут быть переопределены
     protected function fixModel($name, $wo_t5 = false) {
-        if (!$this->validateModel()) {
+        if (!$this->stateManager->validateModelState($this->state)) {
             return $this->state;
         }
 
-        $this->calculateModelParameters();
+        $this->state = $this->stateManager->calculateModelParameters($this->state);
+        $this->state = $this->stateManager->fixModel($this->state, $name, $wo_t5);
+        
         return $this->state;
     }
 
@@ -154,31 +167,7 @@ class BasicModelBuilder {
     // Добавляем методы для логирования в BasicModelBuilder
 
     protected function myLog($message) {
-        if (!isset($this->state['flat_log'])) {
-            return $this->state;
-        }
-
-        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
-        $caller = $backtrace[1];
-        
-        $logEntry = [
-            'time' => microtime(true),
-            'message' => $message,
-            'function' => $caller['function'] ?? 'unknown',
-            'line' => $caller['line'] ?? 0,
-            'state' => [
-                'curBar' => $this->state['curBar'] ?? null,
-                'next_step' => $this->state['next_step'] ?? null,
-                'v' => $this->state['v'] ?? null
-            ]
-        ];
-
-        $this->state['flat_log'][] = $this->formatLogEntry($logEntry);
-
-        if (defined('SHOW_LOG_STATISTICS') && SHOW_LOG_STATISTICS) {
-            $this->updateLogStatistics($caller);
-        }
-
+        $this->state = $this->stateManager->logState($this->state, $message);
         return $this->state;
     }
 
@@ -217,5 +206,59 @@ class BasicModelBuilder {
     protected function setState($state) {
         $this->state = $state;
         $this->linesCalculator->setState($state);
+    }
+
+    protected function clearState($state, $keys) {
+        return $this->stateManager->clearState($state, $keys);
+    }
+
+    protected function checkUnique($state, $keys) {
+        return $this->stateManager->checkUnique($state, $keys); 
+    }
+
+    /**
+     * Handle state transitions
+     */
+    protected function transitionState(string $nextStep, array $params = []): void {
+        $this->state = $this->stateManager->handleStateTransition(
+            $this->state,
+            $nextStep,
+            $params
+        );
+    }
+
+    /**
+     * Process current state
+     */
+    public function processState(): array {
+        if (!isset($this->state['next_step'])) {
+            return $this->state;
+        }
+
+        // Validate state transition
+        if (!$this->stateManager->validateStateTransition(
+            $this->state,
+            $this->state['next_step'],
+            $this->getNextStep()
+        )) {
+            $this->myLog("Invalid state transition attempted");
+            return $this->state;
+        }
+
+        // Process algorithm-specific state
+        $this->state = $this->stateManager->handleAlgorithmState(
+            $this->state,
+            static::ALGORITHM_NUM
+        );
+
+        return $this->state;
+    }
+
+    /**
+     * Get next step based on current state
+     */
+    protected function getNextStep(): string {
+        // Override in specific implementations
+        return 'stop';
     }
 } 

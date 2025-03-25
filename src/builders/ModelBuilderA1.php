@@ -12,13 +12,12 @@
 require_once __DIR__ . '/BasicModelBuilder.php';
 
 class ModelBuilderA1 extends BasicModelBuilder {
-    private const ALGORITHM_NUM = 1;
+    /**
+     * Override algorithm number
+     */
+    protected const ALGORITHM_NUM = 1;
 
     public function fixModel($name, $wo_t5 = false) {
-        static $cnt_fix = 0;
-        $cnt_fix++;
-        $model = [];
-
         // Определяем G3
         $this->state['param']['G3'] = $this->getModelTrendType_G3();
 
@@ -31,55 +30,9 @@ class ModelBuilderA1 extends BasicModelBuilder {
             $this->state['param']['_cross_point'] = round(" " . $_CP['bar'], 3) . " (" . round(" " . abs($_CP['level']), 5) . ")";
         }
 
-        if ($name) {
-            $this->state['status'][$name] = 0;
-        }
-
-        $this->state['param']['_points'] = $newModelPoints = $this->modelPoints($wo_t5);
-        $this->state = $this->myLog("!!! Фиксируем модель [$name]: $newModelPoints " . ($wo_t5 ? "ФИКСАЦИЯ БЕЗ УЧЕТА Т5!!!" : ""));
-
-        static $field_names = [
-            'v', 'alt_old', 'draw_flag', 'split', 'status', 'param', 
-            '3', '2', 't1', 't2', 't2\'', 't3-', 't3', 't3\'', 
-            't3\'мп', 't3\'мп5\'', 't4', 't5', 't5\''
-        ];
-
-        foreach ($field_names as $pv) {
-            if (isset($this->state[$pv])) {
-                $model[$pv] = $this->state[$pv];
-            }
-        }
-
-        $model['param']['max_bar'] = $this->maxBar4Split[$this->curSplit];
-
-        $t1 = $this->state['t1'];
+        $this->state['param']['_points'] = $this->modelPoints($wo_t5);
         
-        if (!isset($this->res['Models'][$t1])) {
-            $model['id'] = $this->modelNextId++;
-            $this->res['Models'][$t1] = [$model];
-        } else {
-            $isDublicateFound = false;
-            foreach ($this->res['Models'][$t1] as $pk => $pv) {
-                if ($pv['param']['_points'] == $newModelPoints) {
-                    $isDublicateFound = $pk;
-                    break;
-                }
-            }
-
-            if ($isDublicateFound === false) {
-                $model['id'] = $this->modelNextId++;
-                $this->res['Models'][$t1][] = $model;
-            } else {
-                if (($this->state['draw_flag'] ?? false) === true) {
-                    $this->state = $this->myLog("Попытка повторной фиксации с draw_flag заблокирована");
-                    return $this->state;
-                }
-                $model['id'] = $this->res['Models'][$t1][$isDublicateFound]['id'];
-                $this->res['Models'][$t1][$isDublicateFound] = $model;
-            }
-        }
-
-        return $this->state;
+        return parent::fixModel($name, $wo_t5);
     }
 
     protected function validateModel() {
@@ -145,5 +98,55 @@ class ModelBuilderA1 extends BasicModelBuilder {
         );
 
         return $this->state;
+    }
+
+    protected function getNextT1State() {
+        return $this->stateManager->getNextT1State($this->state);
+    }
+
+    /**
+     * Get next step based on current state
+     */
+    protected function getNextStep(): string {
+        switch ($this->state['next_step']) {
+            case 'step_1':
+                return $this->determineStep1Transition();
+            case 'step_2':
+                return $this->determineStep2Transition();
+            case 'step_3':
+                return $this->determineStep3Transition();
+            default:
+                return 'stop';
+        }
+    }
+
+    /**
+     * Determine transition from step 1
+     */
+    private function determineStep1Transition(): string {
+        if (!isset($this->state['t1'])) {
+            return 'stop';
+        }
+        return 'step_2';
+    }
+
+    /**
+     * Determine transition from step 2
+     */
+    private function determineStep2Transition(): string {
+        if (!isset($this->state['t2'])) {
+            return 'step_1';
+        }
+        return 'step_3';
+    }
+
+    /**
+     * Determine transition from step 3
+     */
+    private function determineStep3Transition(): string {
+        if (!isset($this->state['t3'])) {
+            return 'step_2';
+        }
+        return 'step_4';
     }
 } 
