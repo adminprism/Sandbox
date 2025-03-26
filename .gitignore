@@ -1,4 +1,3 @@
-
 *.code-workspace
 old/
 big_saves/
@@ -20,4 +19,8 @@ Colab_CSV/
 big_saves.zip
 big_saves_.zip
 node_modules
+
+/vendor/
+.phpunit.result.cache
+composer.lock
 

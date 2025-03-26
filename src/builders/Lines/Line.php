@@ -1,6 +1,8 @@
 <?php
 namespace App\Builders\Lines;
 
+use App\Builders\Calculator\PriceCalculator;
+
 /**
  * Base abstract class for all chart lines
  */
@@ -10,10 +12,12 @@ abstract class Line {
     protected $angle;
     protected $chart;
     protected $pips;
+    protected $calculator;
 
     public function __construct(array $chart, float $pips) {
         $this->chart = $chart;
         $this->pips = $pips;
+        $this->calculator = new PriceCalculator($chart, $pips);
     }
 
     /**
@@ -75,17 +79,21 @@ abstract class Line {
      * Get high value for bar
      */
     protected function high(int $bar, string $v): float {
-        return $v == 'low' ? 
-            $this->chart[$bar]['high'] : 
-            -$this->chart[$bar]['low'];
+        return $this->calculator->getHigh($bar, $v);
     }
 
     /**
      * Get low value for bar
      */
     protected function low(int $bar, string $v): float {
-        return $v == 'low' ? 
-            $this->chart[$bar]['low'] : 
-            -$this->chart[$bar]['high'];
+        return $this->calculator->getLow($bar, $v);
+    }
+
+    protected function calculateLineLevel(float $startLevel, int $startBar, float $angle, int $targetBar): float {
+        return $this->calculator->calculateLineLevel($startLevel, $startBar, $angle, $targetBar);
+    }
+
+    protected function isExtremum(int $bar, string $type): bool {
+        return $this->calculator->isExtremum($bar, $type);
     }
 } 
