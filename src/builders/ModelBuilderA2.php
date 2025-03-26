@@ -25,7 +25,7 @@ class ModelBuilderA2 extends BasicModelBuilder {
         }
 
         // Add algorithm specific parameters
-        $this->state['param']['algorithm'] = self::ALGORITHM_NUM;
+        $this->state['param']['algorithm'] = $this->getAlgorithmNumber();
         
         // Calculate G3 parameter
         $this->state['param']['G3'] = $this->getModelTrendType_G3();
