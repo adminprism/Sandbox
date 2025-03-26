@@ -9,9 +9,12 @@ require_once __DIR__ . '/BasicModelBuilder.php';
 
 class ModelBuilderA2 extends BasicModelBuilder {
     /**
-     * Override algorithm number
+     * Get algorithm number implementation
+     * @return int
      */
-    protected const ALGORITHM_NUM = 2;
+    protected function getAlgorithmNumber(): int {
+        return 2;
+    }
 
     /**
      * Fix model with Algorithm 2 specific logic

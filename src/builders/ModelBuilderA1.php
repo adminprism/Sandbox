@@ -13,9 +13,12 @@ require_once __DIR__ . '/BasicModelBuilder.php';
 
 class ModelBuilderA1 extends BasicModelBuilder {
     /**
-     * Override algorithm number
+     * Get algorithm number implementation
+     * @return int
      */
-    protected const ALGORITHM_NUM = 1;
+    protected function getAlgorithmNumber(): int {
+        return 1;
+    }
 
     public function fixModel($name, $wo_t5 = false) {
         // Определяем G3

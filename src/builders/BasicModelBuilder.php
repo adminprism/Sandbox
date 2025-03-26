@@ -11,7 +11,7 @@
 require_once __DIR__ . '/ModelsLinesCalculator.php';
 require_once __DIR__ . '/StateManager.php';
 
-class BasicModelBuilder {
+abstract class BasicModelBuilder {
     protected $state;
     protected $res;
     protected $modelNextId;
@@ -228,6 +228,12 @@ class BasicModelBuilder {
     }
 
     /**
+     * Get algorithm number
+     * @return int
+     */
+    abstract protected function getAlgorithmNumber(): int;
+
+    /**
      * Process current state
      */
     public function processState(): array {
@@ -248,7 +254,7 @@ class BasicModelBuilder {
         // Process algorithm-specific state
         $this->state = $this->stateManager->handleAlgorithmState(
             $this->state,
-            static::ALGORITHM_NUM
+            $this->getAlgorithmNumber()
         );
 
         return $this->state;
