@@ -397,7 +397,14 @@ class StateManager {
             case 'A2_step_3':
                 $state = $this->handleA2Step3($state);
                 break;
-            // Add other A2 steps
+            case 'A2_step_4':
+                $state = $this->handleA2Step4($state);
+                break;
+            case 'stop':
+                break;
+            default:
+                $state = $this->logState($state, "Unknown step {$state['next_step']} for Algorithm 2");
+                $state['next_step'] = 'stop';
         }
 
         return $state;
@@ -483,31 +490,343 @@ class StateManager {
         return $state;
     }
 
+    private function handleA2Step4(array $state): array {
+        // Point 4: Build trend line and validate
+        $state = $this->buildTrendLine($state);
+        
+        if ($this->validateTrendLine($state)) {
+            $state['next_step'] = 'stop';
+        } else {
+            $state['next_step'] = 'A2_step_2';
+        }
+        
+        return $state;
+    }
+
     /**
-     * Helper methods for Algorithm 2
+     * Search for T3 in Algorithm 2
      */
     private function searchForT3(array $state): array {
-        // Implementation of T3 search logic
+        $v = $state['v'];
+        $curBar = $state['curBar'];
+
+        while ($curBar > 3) {
+            if ($this->isExtremum($curBar, $v)) {
+                // Validate potential T3
+                if ($this->validatePotentialT3($state, $curBar)) {
+                    $state['t3'] = $curBar;
+                    $state = $this->logState($state, "Found T3 at bar $curBar");
+                    break;
+                }
+            }
+            $curBar--;
+        }
+
+        $state['curBar'] = $curBar;
         return $state;
     }
 
+    /**
+     * Search for T4 in Algorithm 2
+     */
     private function searchForT4(array $state): array {
-        // Implementation of T4 search logic
+        $v = $state['v'];
+        $curBar = $state['curBar'];
+
+        while ($curBar > $state['t3']) {
+            if ($this->isExtremum($curBar, not_v($v))) {
+                if ($this->validatePotentialT4($state, $curBar)) {
+                    $state['t4'] = $curBar;
+                    $state = $this->logState($state, "Found T4 at bar $curBar");
+                    break;
+                }
+            }
+            $curBar--;
+        }
+
+        $state['curBar'] = $curBar;
         return $state;
     }
 
+    /**
+     * Search for T5 in Algorithm 2
+     */
     private function searchForT5(array $state): array {
-        // Implementation of T5 search logic
+        $v = $state['v'];
+        $curBar = $state['curBar'];
+
+        while ($curBar > $state['t4']) {
+            if ($this->isExtremum($curBar, $v)) {
+                if ($this->validatePotentialT5($state, $curBar)) {
+                    $state['t5'] = $curBar;
+                    $state = $this->logState($state, "Found T5 at bar $curBar");
+                    break;
+                }
+            }
+            $curBar--;
+        }
+
+        $state['curBar'] = $curBar;
         return $state;
     }
 
+    /**
+     * Validate potential T3 for Algorithm 2
+     */
+    private function validatePotentialT3(array $state, int $bar): bool {
+        $v = $state['v'];
+        
+        // Check if T3 level is appropriate
+        if ($v == 'low') {
+            return $this->low($bar, $v) < $this->low($state['t1'], $v);
+        }
+        return $this->high($bar, $v) > $this->high($state['t1'], $v);
+    }
+
+    /**
+     * Validate potential T4 for Algorithm 2
+     */
+    private function validatePotentialT4(array $state, int $bar): bool {
+        $v = $state['v'];
+        
+        // Check if T4 level is appropriate
+        if ($v == 'low') {
+            return $this->high($bar, $v) > $this->high($state['t3'], $v);
+        }
+        return $this->low($bar, $v) < $this->low($state['t3'], $v);
+    }
+
+    /**
+     * Validate potential T5 for Algorithm 2
+     */
+    private function validatePotentialT5(array $state, int $bar): bool {
+        $v = $state['v'];
+        
+        // Check if T5 level is appropriate
+        if ($v == 'low') {
+            return $this->low($bar, $v) < $this->low($state['t4'], $v);
+        }
+        return $this->high($bar, $v) > $this->high($state['t4'], $v);
+    }
+
+    /**
+     * Build trend line
+     */
     private function buildTrendLine(array $state): array {
-        // Implementation of trend line building logic
+        $v = $state['v'];
+        
+        // Calculate trend line parameters
+        $t3Point = isset($state['t3\'']) ? 't3\'' : 't3';
+        
+        $trendLine = [
+            'bar' => $state['t1'],
+            'level' => $this->low($state['t1'], $v),
+            'angle' => ($this->low($state[$t3Point], $v) - $this->low($state['t1'], $v)) / 
+                      ($state[$t3Point] - $state['t1'])
+        ];
+
+        $state['param']['trendLine'] = $trendLine;
+        $state = $this->logState($state, "Built trend line with angle {$trendLine['angle']}");
+
         return $state;
     }
 
-    private function validateTrendLine(array $state): bool {
-        // Implementation of trend line validation
+    /**
+     * Validate trend line
+     */
+    private function validateTrendLine(array $state, bool $isAlgorithm2 = false): bool {
+        $v = $state['v'];
+        
+        // Check basic position requirements
+        if ($state['t3'] <= $state['t2'] || $state['t2'] <= $state['t1']) {
+            return false;
+        }
+
+        // Calculate trend line parameters
+        $trendLine = [
+            'bar' => $state['t1'],
+            'level' => $this->low($state['t1'], $v),
+            'angle' => ($this->low($state['t3'], $v) - $this->low($state['t1'], $v)) / 
+                      ($state['t3'] - $state['t1'])
+        ];
+
+        // Algorithm 2 specific validation
+        if ($isAlgorithm2) {
+            return $this->validateAlgorithm2TrendLine($state, $trendLine);
+        }
+
+        // Check if price crosses trend line between T1 and T3
+        for ($i = $state['t1'] + 1; $i < $state['t3']; $i++) {
+            $lineLevel = $this->calculateLineLevel($trendLine, $i);
+            if ($this->low($i, $v) <= $lineLevel) {
+                return false;
+            }
+        }
+
         return true;
+    }
+
+    /**
+     * Algorithm 2 specific trend line validation
+     */
+    private function validateAlgorithm2TrendLine(array $state, array $trendLine): bool {
+        $v = $state['v'];
+        
+        // Add Algorithm 2 specific validation logic here
+        // For example, checking additional conditions for T3' and T5
+        if (isset($state['t3\''])) {
+            $t3Level = $this->low($state['t3\''], $v);
+        } else {
+            $t3Level = $this->low($state['t3'], $v);
+        }
+
+        // Validate trend line angle
+        $angle = ($t3Level - $this->low($state['t1'], $v)) / 
+                ($state['t3'] - $state['t1']);
+
+        if (abs($angle) < 0.0001) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Calculate line level at specific bar
+     */
+    private function calculateLineLevel(array $line, int $bar): float {
+        return $line['level'] + ($bar - $line['bar']) * $line['angle'];
+    }
+
+    /**
+     * Handle Step 1 - Point 1 search and confirming extremum
+     */
+    private function handleStep1(array $state): array {
+        $v = $state['v'];
+        
+        if (!isset($state['t1'])) {
+            // Search for extremum
+            if ($this->isExtremum($state['curBar'], $v)) {
+                $state['t1'] = $state['curBar'];
+                $state = $this->logState($state, "Found T1 at bar {$state['curBar']}");
+                $state['next_step'] = 'step_2';
+            } else {
+                $state['curBar']--;
+                if ($state['curBar'] < 3) {
+                    $state['next_step'] = 'stop';
+                }
+            }
+        }
+
+        return $state;
+    }
+
+    /**
+     * Handle Step 2 - Point 2 search and validation
+     */
+    private function handleStep2(array $state): array {
+        $v = $state['v'];
+        
+        if (!isset($state['t2'])) {
+            // Search for T2
+            if ($this->isExtremum($state['curBar'], not_v($v))) {
+                $state['t2'] = $state['curBar'];
+                $state = $this->logState($state, "Found T2 at bar {$state['curBar']}");
+                
+                // Validate T2 position
+                if ($this->validateT2Position($state)) {
+                    $state['next_step'] = 'step_3';
+                } else {
+                    unset($state['t2']);
+                    $state['curBar']--;
+                }
+            } else {
+                $state['curBar']--;
+            }
+        }
+
+        return $state;
+    }
+
+    /**
+     * Handle Step 3 - Point 3 search and trend line validation
+     */
+    private function handleStep3(array $state): array {
+        $v = $state['v'];
+        
+        if (!isset($state['t3'])) {
+            // Search for T3
+            if ($this->isExtremum($state['curBar'], $v)) {
+                $state['t3'] = $state['curBar'];
+                $state = $this->logState($state, "Found T3 at bar {$state['curBar']}");
+                
+                // Validate trend line
+                if ($this->validateTrendLine($state)) {
+                    $state['next_step'] = 'step_4';
+                } else {
+                    unset($state['t3']);
+                    $state['curBar']--;
+                }
+            } else {
+                $state['curBar']--;
+            }
+        }
+
+        return $state;
+    }
+
+    /**
+     * Check if bar is extremum
+     */
+    private function isExtremum(int $bar, string $type): bool {
+        if ($bar <= 0 || $bar >= count($this->chart) - 1) {
+            return false;
+        }
+
+        if ($type == 'low') {
+            return $this->chart[$bar]['low'] < $this->chart[$bar-1]['low'] && 
+                   $this->chart[$bar]['low'] < $this->chart[$bar+1]['low'];
+        }
+        
+        return $this->chart[$bar]['high'] > $this->chart[$bar-1]['high'] && 
+               $this->chart[$bar]['high'] > $this->chart[$bar+1]['high'];
+    }
+
+    /**
+     * Validate T2 position relative to T1
+     */
+    private function validateT2Position(array $state): bool {
+        $v = $state['v'];
+        
+        if ($v == 'low') {
+            return $this->high($state['t2'], $v) > $this->high($state['t1'], $v);
+        }
+        
+        return $this->low($state['t2'], $v) < $this->low($state['t1'], $v);
+    }
+
+    /**
+     * Get high value for bar
+     */
+    private function high(int $bar, string $v): float {
+        return $v == 'low' ? 
+            $this->chart[$bar]['high'] : 
+            -$this->chart[$bar]['low'];
+    }
+
+    /**
+     * Get low value for bar
+     */
+    private function low(int $bar, string $v): float {
+        return $v == 'low' ? 
+            $this->chart[$bar]['low'] : 
+            -$this->chart[$bar]['high'];
+    }
+
+    /**
+     * Get opposite direction
+     */
+    private function not_v(string $v): string {
+        return $v == 'low' ? 'high' : 'low';
     }
 } 
