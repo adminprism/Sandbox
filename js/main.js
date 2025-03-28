@@ -274,36 +274,30 @@ $(document).ready(function () {
       $("#from-to-text").css({ left: -1000 });
       return;
     }
-    //console.log(Data[0]); alert("mouse move");
+
     var price_, bar_ind, d1, d2, ftt, xx, dx, old_cb;
     if (Data_settings["n_bar"] > 0) {
-      graph_position = $("#graph").offset(); // <canvas id='graph'
+      graph_position = $("#graph").offset();
       var xpos = event.pageX - graph_position.left;
       var ypos = event.pageY - graph_position.top;
 
-      // Проверка, что Data[index] определен
-      if (Data[index]) {
-        if (!("open_time" in Data[index])) {
-          console.error(
-            `Ошибка: open_time отсутствует в Data[${index}]`,
-            Data[index]
-          );
-        } else {
-          d1 = get_date_str(timestampToDate(Data[index].open_time), 0);
-        }
-
-        if (!("close_time" in Data[index])) {
-          console.error(
-            `Ошибка: close_time отсутствует в Data[${index}]`,
-            Data[index]
-          );
-        } else {
-          d2 = get_date_str(timestampToDate(Data[index].close_time + 1), 0);
-        }
-
-        // ... (остальной код)
+      // Calculate the current bar index based on mouse position
+      var nbar = Math.round(
+        (Data_settings.X_right - xpos) /
+        Graph_settings.scale[Data_settings.scale].step
+      );
+      
+      // Get the current bar index
+      var currentBarIndex = Data_settings["cur_bar"] - nbar;
+      
+      // Check if the index is valid before accessing Data array
+      if (currentBarIndex >= 0 && currentBarIndex < Data.length) {
+        d1 = get_date_str(timestampToDate(Data[currentBarIndex].open_time), 0);
+        d2 = get_date_str(timestampToDate(Data[currentBarIndex].close_time + 1), 0);
       } else {
-        console.error(`Ошибка: Data[${index}] не определен`, Data);
+        // Handle invalid index
+        if (ConsoleLoggingOn) console.log("Invalid bar index:", currentBarIndex);
+        return;
       }
 
       if (penDown == false) {
